@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitahaya Investments - Calculadora de Ganancias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* ========================================
+           VARIABLES DE COLOR - PALETA PITAHAYA
+           ======================================== */
+        :root {
+            --rosa-primario: #ff69b4;
+            --rosa-secundario: #ffb6c1;
+            --rosa-oscuro: #c71585;
+            --rosa-suave: #fff0f5;
+            --rosa-extrasuave: #fff9fc;
+            --blanco-translucido: rgba(255, 255, 255, 0.92);
+            --negro-translucido: rgba(0, 0, 0, 0.03);
+            --sombra-rosa: rgba(255, 105, 180, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url("{{ url_for('static', filename='fondo-pitahaya.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--negro-translucido);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-card {
+            background-color: var(--blanco-translucido);
+            backdrop-filter: blur(8px);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px var(--sombra-rosa);
+            overflow: hidden;
+            border: 2px solid var(--rosa-secundario);
+        }
+
+        .header-gradient {
+            background: linear-gradient(135deg, var(--rosa-primario) 0%, var(--rosa-oscuro) 100%);
+            padding: 30px;
+            color: white;
+            border-bottom: 3px solid var(--rosa-secundario);
+        }
+
+        .welcome-badge {
+            background-color: rgba(255, 255, 255, 0.25);
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-modificar {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-modificar:hover {
+            background: rgba(255, 255, 255, 0.4);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .slider-container {
+            background: rgba(255, 240, 245, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--rosa-secundario);
+            box-shadow: 0 5px 15px var(--sombra-rosa);
+        }
+
+        .slider-label {
+            font-weight: 600;
+            color: var(--rosa-oscuro);
+            margin-bottom: 10px;
+        }
+
+        .slider-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--rosa-primario);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, var(--rosa-primario) 0%, var(--rosa-oscuro) 100%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px var(--sombra-rosa);
+            cursor: pointer;
+            border: 3px solid var(--rosa-primario);
+        }
+
+        .custom-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .custom-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--rosa-secundario);
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .custom-input-group input:focus {
+            border-color: var(--rosa-primario);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--sombra-rosa);
+        }
+
+        .custom-input-group button {
+            padding: 10px 20px;
+            background: var(--rosa-primario);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .custom-input-group button:hover {
+            background: var(--rosa-oscuro);
+            box-shadow: 0 5px 15px var(--sombra-rosa);
+            transform: translateY(-2px);
+        }
+
+        .investment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px var(--sombra-rosa);
+            transition: transform 0.3s;
+            height: 100%;
+            position: relative;
+            border: 1px solid var(--rosa-secundario);
+        }
+
+        .investment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--sombra-rosa);
+        }
+
+        .investment-card.pitahaya {
+            border: 3px solid var(--rosa-primario);
+            background: linear-gradient(135deg, white, var(--rosa-extrasuave));
+        }
+
+        .investment-card.sofipo {
+            border: 3px solid var(--rosa-oscuro);
+        }
+
+        .tope-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--rosa-oscuro);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 50px;
+            z-index: 2;
+        }
+
+        .investment-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--rosa-primario);
+        }
+
+        .investment-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-right: 60px;
+            color: var(--rosa-oscuro);
+        }
+
+        .investment-amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--rosa-primario);
+            margin-bottom: 10px;
+        }
+
+        .investment-amount.sofipo-color {
+            color: var(--rosa-oscuro);
+        }
+
+        .investment-detail {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--sombra-rosa);
+            border: 1px solid var(--rosa-secundario);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, var(--rosa-primario) 0%, var(--rosa-oscuro) 100%);
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
+            padding: 15px;
+            border-bottom: 1px solid var(--rosa-secundario);
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row.highlight {
+            background-color: var(--rosa-suave);
+        }
+
+        .table-row.sofipo-row {
+            background-color: rgba(255, 182, 193, 0.2);
+        }
+
+        .feature-badge {
+            background-color: var(--rosa-suave);
+            color: var(--rosa-oscuro);
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            display: inline-block;
+            border: 1px solid var(--rosa-secundario);
+        }
+
+        .footer-note {
+            background-color: rgba(255, 240, 245, 0.8);
+            border-left: 4px solid var(--rosa-primario);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid var(--rosa-secundario);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--rosa-primario) 0%, var(--rosa-oscuro) 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--sombra-rosa);
+        }
+
+        .btn-outline-success {
+            border: 2px solid var(--rosa-primario);
+            color: var(--rosa-oscuro);
+            font-weight: 600;
+            background: white;
+        }
+
+        .btn-outline-success:hover {
+            background: linear-gradient(135deg, var(--rosa-primario) 0%, var(--rosa-oscuro) 100%);
+            border-color: transparent;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-card">
+            <!-- HEADER CON BOTÓN MODIFICAR -->
+            <div class="header-gradient text-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="welcome-badge">
+                        <i class="bi bi-person-circle me-2"></i>
+                        Bienvenido, {{ nombre }}
+                    </div>
+                    <a href="{{ url_for('modificar_datos') }}" class="btn-modificar">
+                        <i class="bi bi-pencil-square me-1"></i> Modificar mis datos
+                    </a>
+                </div>
+                <h1 class="display-5 fw-bold mb-3">🍈 Pitahaya Investments</h1>
+                <p class="lead mb-0">Calculadora de Ganancias • Invierte en tierra productiva</p>
+            </div>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="p-4">
+                <!-- Slider de Inversión -->
+                <div class="slider-container">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="slider-label">
+                                <i class="bi bi-piggy-bank-fill me-2"></i>
+                                ¿Cuánto deseas invertir?
+                            </div>
+                            <input type="range" class="range-slider" id="capitalSlider" 
+                                   min="80000" max="1000000" step="10000" value="500000">
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">$80,000</small>
+                                <small class="text-muted">$500,000</small>
+                                <small class="text-muted">$1,000,000</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="slider-label">Tu inversión</div>
+                            <div class="custom-input-group mb-2">
+                                <input type="number" id="capitalInput" min="80000" max="1000000" value="500000" step="10000">
+                                <button id="setCapitalBtn">Aplicar</button>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-outline-success btn-sm" id="maxButton">
+                                    <i class="bi bi-stars"></i> $1M
+                                </button>
+                                <small class="text-muted">Monto personalizado</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards de Resultados -->
+                <div class="row g-4 mb-4">
+                    <!-- Pitahaya -->
+                    <div class="col-md-3">
+                        <div class="investment-card pitahaya">
+                            <div class="investment-icon"><i class="bi bi-tree-fill"></i></div>
+                            <div class="investment-title">Pitahaya</div>
+                            <div class="investment-amount" id="pitahayaTotal">$2,170,000</div>
+                            <div class="investment-detail">
+                                Rentas: <span id="pitahayaRentas">$1,220,000</span>
+                            </div>
+                            <div class="investment-detail">
+                                Plusvalía: <span id="pitahayaPlusvalia">$450,000</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="feature-badge"><i class="bi bi-file-text"></i> Escritura</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cetes -->
+                    <div class="col-md-3">
+                        <div class="investment-card">
+                            <div class="investment-icon"><i class="bi bi-bank2"></i></div>
+                            <div class="investment-title">Cetes (7.37%)</div>
+                            <div class="investment-amount" id="cetesTotal">$1,237,000</div>
+                            <div class="investment-detail">Respaldo: Gobierno</div>
+                        </div>
+                    </div>
+                    <!-- Bolsa -->
+                    <div class="col-md-3">
+                        <div class="investment-card">
+                            <div class="investment-icon"><i class="bi bi-graph-up"></i></div>
+                            <div class="investment-title">S&P 500 (10.5%)</div>
+                            <div class="investment-amount" id="bolsaTotal">$1,550,000</div>
+                            <div class="investment-detail">Volatilidad ±20%</div>
+                        </div>
+                    </div>
+                    <!-- SOFIPOS -->
+                    <div class="col-md-3">
+                        <div class="investment-card sofipo">
+                            <div class="tope-badge">CON TOPE</div>
+                            <div class="investment-icon"><i class="bi bi-phone-fill"></i></div>
+                            <div class="investment-title">SOFIPOS (13%)</div>
+                            <div class="investment-amount sofipo-color" id="sofipoTotal">$1,800,000</div>
+                            <div class="investment-detail">Tope: $218,304</div>
+                            <div class="warning-text" id="sofipoWarning">
+                                Solo los primeros $218k están protegidos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla Comparativa -->
+                <div class="comparison-table mb-4">
+                    <div class="table-header">
+                        <i class="bi bi-table me-2"></i>
+                        Comparativa a 20 Años
+                    </div>
+                    <div class="table-row">
+                        <div><strong>Concepto</strong></div>
+                        <div><strong>Pitahaya</strong></div>
+                        <div><strong>Cetes</strong></div>
+                        <div><strong>S&P 500</strong></div>
+                        <div><strong>SOFIPOS</strong></div>
+                    </div>
+                    <div class="table-row">
+                        <div>Inversión Inicial</div>
+                        <div id="invInicial">$500,000</div>
+                        <div id="invInicialCetes">$500,000</div>
+                        <div id="invInicialBolsa">$500,000</div>
+                        <div id="invInicialSofipo">$500,000</div>
+                    </div>
+                    <div class="table-row">
+                        <div>Ganancia Total</div>
+                        <div id="gananciaTotalP">$1,220,000</div>
+                        <div id="gananciaTotalC">$737,000</div>
+                        <div id="gananciaTotalB">$1,050,000</div>
+                        <div id="gananciaTotalS">$1,300,000</div>
+                    </div>
+                    <div class="table-row highlight">
+                        <div><strong>VALOR FINAL</strong></div>
+                        <div><strong id="totalFinalPitahaya">$2,170,000</strong></div>
+                        <div><strong id="totalFinalCetes">$1,237,000</strong></div>
+                        <div><strong id="totalFinalBolsa">$1,550,000</strong></div>
+                        <div><strong id="totalFinalSofipo">$1,800,000</strong></div>
+                    </div>
+                    <div class="table-row sofipo-row">
+                        <div>Límite PROSOFIPO</div>
+                        <div>Sin límite</div>
+                        <div>Sin límite</div>
+                        <div>Sin límite</div>
+                        <div id="limiteSofipoDisplay"><strong>$218,304</strong></div>
+                    </div>
+                </div>
+
+                <!-- Nota Explicativa -->
+                <div class="footer-note">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-info-circle-fill fs-3" style="color: var(--rosa-primario);"></i>
+                        </div>
+                        <div>
+                            <h6 style="color: var(--rosa-oscuro);">¿Por qué Pitahaya?</h6>
+                            <p class="mb-0">Escritura pública a tu nombre, renta garantizada, sin topes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <button class="btn btn-success w-100 py-3" id="downloadPDF">
+                            <i class="bi bi-file-pdf me-2"></i>
+                            Descargar PDF
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="https://wa.me/5219994540539" class="btn btn-outline-success w-100 py-3" target="_blank">
+                            <i class="bi bi-whatsapp me-2"></i>
+                            Contactar asesor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Elementos del DOM
+        const slider = document.getElementById('capitalSlider');
+        const capitalInput = document.getElementById('capitalInput');
+        const setCapitalBtn = document.getElementById('setCapitalBtn');
+        const maxButton = document.getElementById('maxButton');
+        
+        // Elementos de resultados
+        const pitahayaTotal = document.getElementById('pitahayaTotal');
+        const pitahayaRentas = document.getElementById('pitahayaRentas');
+        const pitahayaPlusvalia = document.getElementById('pitahayaPlusvalia');
+        const cetesTotal = document.getElementById('cetesTotal');
+        const bolsaTotal = document.getElementById('bolsaTotal');
+        const sofipoTotal = document.getElementById('sofipoTotal');
+        
+        // Elementos de tabla
+        const invInicial = document.getElementById('invInicial');
+        const invInicialCetes = document.getElementById('invInicialCetes');
+        const invInicialBolsa = document.getElementById('invInicialBolsa');
+        const invInicialSofipo = document.getElementById('invInicialSofipo');
+        const gananciaTotalP = document.getElementById('gananciaTotalP');
+        const gananciaTotalC = document.getElementById('gananciaTotalC');
+        const gananciaTotalB = document.getElementById('gananciaTotalB');
+        const gananciaTotalS = document.getElementById('gananciaTotalS');
+        const totalFinalPitahaya = document.getElementById('totalFinalPitahaya');
+        const totalFinalCetes = document.getElementById('totalFinalCetes');
+        const totalFinalBolsa = document.getElementById('totalFinalBolsa');
+        const totalFinalSofipo = document.getElementById('totalFinalSofipo');
+        const limiteSofipoDisplay = document.getElementById('limiteSofipoDisplay');
+        const sofipoWarning = document.getElementById('sofipoWarning');
+
+        // Factores de cálculo
+        const RENTA_ANUAL = 0.122;
+        const PLUSVALIA_FACTOR = 0.9;
+        const CETES_TASA = 0.0737;
+        const BOLSA_TASA = 0.105;
+        const SOFIPO_TASA = 0.13;
+        const TOPE_PROSOFIPO = 218304;
+        const AÑOS = 20;
+
+        function formatMoney(amount) {
+            return '$' + Math.round(amount).toLocaleString('es-MX');
+        }
+
+        function calcularTodo(capital) {
+            capital = Math.min(Math.max(capital, 80000), 1000000);
+            slider.value = capital;
+            capitalInput.value = capital;
+            
+            const rentaAnual = capital * RENTA_ANUAL;
+            const rentas20años = rentaAnual * AÑOS;
+            const plusvalia = capital * PLUSVALIA_FACTOR;
+            const totalPitahaya = capital + rentas20años + plusvalia;
+            
+            const totalCetes = capital + (capital * CETES_TASA * AÑOS);
+            const totalBolsa = capital + (capital * BOLSA_TASA * AÑOS);
+            const totalSofipo = capital + (capital * SOFIPO_TASA * AÑOS);
+            
+            const montoNoProtegido = Math.max(0, capital - TOPE_PROSOFIPO);
+
+            // Actualizar UI
+            pitahayaTotal.textContent = formatMoney(totalPitahaya);
+            pitahayaRentas.textContent = formatMoney(rentas20años);
+            pitahayaPlusvalia.textContent = formatMoney(plusvalia);
+            cetesTotal.textContent = formatMoney(totalCetes);
+            bolsaTotal.textContent = formatMoney(totalBolsa);
+            sofipoTotal.textContent = formatMoney(totalSofipo);
+            
+            invInicial.textContent = formatMoney(capital);
+            invInicialCetes.textContent = formatMoney(capital);
+            invInicialBolsa.textContent = formatMoney(capital);
+            invInicialSofipo.textContent = formatMoney(capital);
+            
+            gananciaTotalP.textContent = formatMoney(rentas20años);
+            gananciaTotalC.textContent = formatMoney(capital * CETES_TASA * AÑOS);
+            gananciaTotalB.textContent = formatMoney(capital * BOLSA_TASA * AÑOS);
+            gananciaTotalS.textContent = formatMoney(capital * SOFIPO_TASA * AÑOS);
+            
+            totalFinalPitahaya.textContent = formatMoney(totalPitahaya);
+            totalFinalCetes.textContent = formatMoney(totalCetes);
+            totalFinalBolsa.textContent = formatMoney(totalBolsa);
+            totalFinalSofipo.textContent = formatMoney(totalSofipo);
+            
+            limiteSofipoDisplay.innerHTML = `<strong>${formatMoney(TOPE_PROSOFIPO)}</strong>`;
+            
+            if (capital > TOPE_PROSOFIPO) {
+                sofipoWarning.innerHTML = `⚠️ ${formatMoney(capital - TOPE_PROSOFIPO)} NO protegidos`;
+            } else {
+                sofipoWarning.innerHTML = `✅ Dentro del límite PROSOFIPO`;
+            }
+        }
+
+        // Eventos
+        slider.addEventListener('input', (e) => calcularTodo(parseInt(e.target.value)));
+        setCapitalBtn.addEventListener('click', () => calcularTodo(parseInt(capitalInput.value)));
+        capitalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') setCapitalBtn.click();
+        });
+        maxButton.addEventListener('click', () => calcularTodo(1000000));
+
+        // PDF
+        document.getElementById('downloadPDF').addEventListener('click', function() {
+            const capital = parseInt(slider.value);
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Generando...';
+            btn.disabled = true;
+            
+            fetch('/generar-pdf', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({capital: capital})
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pitahaya_${capital}.pdf`;
+                a.click();
+            })
+            .catch(() => alert('Error al generar PDF'))
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        });
+
+        // Inicializar
+        calcularTodo(500000);
+    </script>
+</body>
+</html>
