@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
+from flask import send_from_directory
+import os
 import os
 from datetime import datetime
 from reportlab.lib import colors
@@ -19,6 +21,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 
 # ============================================
