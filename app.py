@@ -7,7 +7,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 import io
-from supabase import create_client, Client
+from supabase import create_client
+from supabase.lib.client_options import ClientOptions
 from dotenv import load_dotenv
 import logging
 import sys
@@ -23,7 +24,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 
 # ============================================
-# CONFIGURACIÓN SUPABASE (VERSIÓN CORREGIDA PARA VERCEL)
+# CONFIGURACIÓN SUPABASE (VERSIÓN FINAL CORREGIDA)
 # ============================================
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
@@ -31,30 +32,39 @@ SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 logger.info(f"SUPABASE_URL: {SUPABASE_URL}")
 logger.info(f"SUPABASE_KEY: {'Configurada' if SUPABASE_KEY else 'No configurada'}")
 
-# Inicialización diferida de Supabase (para evitar errores en Vercel)
-supabase = None
-
 def get_supabase():
-    """Función para obtener el cliente de Supabase (inicialización diferida)"""
-    global supabase
-    if supabase is None and SUPABASE_URL and SUPABASE_KEY:
-        try:
-            # Crear el cliente sin inicialización compleja
-            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-            logger.info("✅ Supabase client initialized successfully")
-        except Exception as e:
-            logger.error(f"❌ Error inicializando Supabase: {str(e)}")
-            supabase = None
-    return supabase
+    """Función para obtener el cliente de Supabase con configuración optimizada para Vercel"""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        logger.error("❌ SUPABASE_URL o SUPABASE_KEY no están configurados")
+        return None
+    
+    try:
+        # Configuración específica para entornos serverless
+        options = ClientOptions(
+            auto_refresh_token=False,
+            persist_session=False,
+            headers={
+                'X-Client-Info': 'pitahaya-vercel-app'
+            }
+        )
+        
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=options)
+        logger.info("✅ Supabase client initialized successfully")
+        return supabase
+    except Exception as e:
+        logger.error(f"❌ Error inicializando Supabase: {str(e)}")
+        return None
+
+# Inicializar el cliente (ahora con manejo de errores)
+supabase = get_supabase()
 
 # ============================================
 # FUNCIONES SUPABASE
 # ============================================
 def guardar_lead(nombre, telefono, email, ip):
     """Guarda un lead en Supabase"""
-    supabase_client = get_supabase()
-    if not supabase_client:
-        logger.error("Supabase no está configurado o no disponible")
+    if not supabase:
+        logger.error("❌ Supabase no está disponible")
         return False
     
     try:
@@ -66,13 +76,17 @@ def guardar_lead(nombre, telefono, email, ip):
             'created_at': datetime.now().isoformat()
         }
         
-        response = supabase_client.table('leads').insert(data).execute()
+        logger.info(f"Intentando guardar lead: {data}")
+        
+        response = supabase.table('leads').insert(data).execute()
+        
+        logger.info(f"Respuesta de Supabase: {response}")
         
         if hasattr(response, 'data') and response.data:
-            logger.info(f"✅ Lead guardado: {nombre} - {email}")
+            logger.info(f"✅ Lead guardado exitosamente: {nombre}")
             return True
         else:
-            logger.error(f"❌ No se pudo verificar la inserción")
+            logger.error(f"❌ Respuesta inesperada de Supabase: {response}")
             return False
             
     except Exception as e:
