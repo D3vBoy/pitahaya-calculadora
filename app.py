@@ -1,6 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
-from flask import send_from_directory
-import os
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify, send_from_directory
 import os
 from datetime import datetime
 from reportlab.lib import colors
@@ -12,19 +10,16 @@ import io
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
+import sys
 
 # Cargar variables de entorno
 load_dotenv()
 
-# Configurar logging
-logging.basicConfig(level=logging.INFO)
+# Configurar logging para ver errores en Vercel
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 
 # ============================================
@@ -33,12 +28,15 @@ app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    logger.error("SUPABASE_URL y SUPABASE_KEY deben estar definidos en .env")
-    raise ValueError("Credenciales de Supabase no configuradas")
+logger.info(f"SUPABASE_URL: {SUPABASE_URL}")
+logger.info(f"SUPABASE_KEY: {'Configurada' if SUPABASE_KEY else 'No configurada'}")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-logger.info("✅ Supabase client initialized successfully")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    logger.error("SUPABASE_URL y SUPABASE_KEY deben estar definidos")
+    supabase = None
+else:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    logger.info("✅ Supabase client initialized successfully")
 
 # ============================================
 # FACTORES DE CÁLCULO
@@ -52,10 +50,32 @@ TOPE_PROSOFIPO = 218304  # $218,304
 AÑOS = 20
 
 # ============================================
+# RUTA DE PRUEBA (para verificar que Vercel funciona)
+# ============================================
+@app.route('/test')
+def test():
+    return "✅ La app está funcionando correctamente en Vercel"
+
+# ============================================
+# FAVICON
+# ============================================
+@app.route('/favicon.ico')
+def favicon():
+    try:
+        return send_from_directory(os.path.join(app.root_path, 'static'),
+                                   'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    except:
+        return "", 204  # No content si no existe
+
+# ============================================
 # FUNCIONES SUPABASE
 # ============================================
 def guardar_lead(nombre, telefono, email, ip):
     """Guarda un lead en Supabase"""
+    if not supabase:
+        logger.error("Supabase no está configurado")
+        return False
+    
     try:
         data = {
             'nombre': nombre,
@@ -84,7 +104,17 @@ def guardar_lead(nombre, telefono, email, ip):
 @app.route('/')
 def index():
     """Página de registro obligatorio"""
-    return render_template('registro.html')
+    logger.info("🚀 Entrando a la ruta /")
+    try:
+        return render_template('registro.html')
+    except Exception as e:
+        logger.error(f"❌ Error cargando registro.html: {str(e)}")
+        return f"""
+        <h1>Error cargando la página</h1>
+        <p>{str(e)}</p>
+        <p>Verifica que el archivo 'registro.html' existe en la carpeta 'templates/'</p>
+        <p><a href="/test">Ir a página de prueba</a></p>
+        """, 500
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
@@ -130,7 +160,11 @@ def calculadora():
     """Página de la calculadora"""
     if not session.get('registrado'):
         return redirect(url_for('index'))
-    return render_template('calculadora.html', nombre=session.get('nombre_cliente'))
+    try:
+        return render_template('calculadora.html', nombre=session.get('nombre_cliente'))
+    except Exception as e:
+        logger.error(f"❌ Error cargando calculadora.html: {str(e)}")
+        return f"Error cargando calculadora: {str(e)}", 500
 
 @app.route('/modificar-datos', methods=['GET', 'POST'])
 def modificar_datos():
@@ -163,11 +197,15 @@ def modificar_datos():
         session['email_cliente'] = email
         return redirect(url_for('calculadora'))
     
-    return render_template('modificar_datos.html', datos={
-        'nombre': session.get('nombre_cliente', ''),
-        'telefono': session.get('telefono_cliente', ''),
-        'email': session.get('email_cliente', '')
-    })
+    try:
+        return render_template('modificar_datos.html', datos={
+            'nombre': session.get('nombre_cliente', ''),
+            'telefono': session.get('telefono_cliente', ''),
+            'email': session.get('email_cliente', '')
+        })
+    except Exception as e:
+        logger.error(f"❌ Error cargando modificar_datos.html: {str(e)}")
+        return f"Error: {str(e)}", 500
 
 @app.route('/calcular', methods=['POST'])
 def calcular():
@@ -205,7 +243,7 @@ def calcular():
     })
 
 # ============================================
-# GENERACIÓN DE PDF (VERSIÓN COMPLETA RESTAURADA)
+# GENERACIÓN DE PDF
 # ============================================
 @app.route('/generar-pdf', methods=['POST'])
 def generar_pdf():
@@ -229,25 +267,28 @@ def generar_pdf():
     total_sofipo = capital + (capital * SOFIPO_TASA * AÑOS)
     monto_no_protegido = max(0, capital - TOPE_PROSOFIPO)
     
-    # Crear PDF
-    pdf_buffer = crear_pdf(
-        nombre=nombre,
-        capital=capital,
-        total_pitahaya=total_pitahaya,
-        rentas=rentas_20años,
-        plusvalia=plusvalia,
-        cetes=total_cetes,
-        bolsa=total_bolsa,
-        sofipo=total_sofipo,
-        monto_no_protegido=monto_no_protegido
-    )
-    
-    return send_file(
-        pdf_buffer,
-        as_attachment=True,
-        download_name=f"pitahaya_simulacion_{int(capital)}.pdf",
-        mimetype='application/pdf'
-    )
+    try:
+        pdf_buffer = crear_pdf(
+            nombre=nombre,
+            capital=capital,
+            total_pitahaya=total_pitahaya,
+            rentas=rentas_20años,
+            plusvalia=plusvalia,
+            cetes=total_cetes,
+            bolsa=total_bolsa,
+            sofipo=total_sofipo,
+            monto_no_protegido=monto_no_protegido
+        )
+        
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name=f"pitahaya_simulacion_{int(capital)}.pdf",
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        logger.error(f"❌ Error generando PDF: {str(e)}")
+        return {'error': str(e)}, 500
 
 def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia, 
              cetes, bolsa, sofipo, monto_no_protegido):
@@ -292,9 +333,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
         alignment=1,
     ))
     
-    # ========================================
-    # 1. TÍTULO
-    # ========================================
+    # TÍTULO
     title = Paragraph("🍈 Pitahaya Investments", styles['CustomTitle'])
     elements.append(title)
     
@@ -306,9 +345,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     
     elements.append(Spacer(1, 0.3 * inch))
     
-    # ========================================
-    # 2. DATOS DE INVERSIÓN
-    # ========================================
+    # DATOS DE INVERSIÓN
     inv_data = [
         ["Concepto", "Valor"],
         ["Inversión inicial", f"${capital:,.0f}"],
@@ -334,9 +371,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     elements.append(inv_table)
     elements.append(Spacer(1, 0.3 * inch))
     
-    # ========================================
-    # 3. COMPARATIVA DE INVERSIONES
-    # ========================================
+    # COMPARATIVA
     comp_title = Paragraph("Comparativa a 20 años (interés simple, SIN reinversión)", styles['Heading2'])
     elements.append(comp_title)
     elements.append(Spacer(1, 0.1 * inch))
@@ -364,9 +399,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     elements.append(comp_table)
     elements.append(Spacer(1, 0.2 * inch))
     
-    # ========================================
-    # 4. DETALLE PITAHAYA
-    # ========================================
+    # DETALLE PITAHAYA
     detalle_title = Paragraph("Desglose Pitahaya", styles['Heading2'])
     elements.append(detalle_title)
     elements.append(Spacer(1, 0.1 * inch))
@@ -394,9 +427,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     elements.append(detalle_table)
     elements.append(Spacer(1, 0.2 * inch))
     
-    # ========================================
-    # 5. ADVERTENCIA SOFIPOS
-    # ========================================
+    # ADVERTENCIA SOFIPOS
     if monto_no_protegido > 0:
         warning_text = f"""
         <para>
@@ -411,9 +442,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
         elements.append(warning_paragraph)
         elements.append(Spacer(1, 0.2 * inch))
     
-    # ========================================
-    # 6. DESCARGO DE RESPONSABILIDAD Y CONTACTO
-    # ========================================
+    # DESCARGO Y CONTACTO
     disclaimer_text = f"""
     <para>
     <b>Simulación de inversión real basada en datos históricos y proyecciones internas.</b><br/>
@@ -433,34 +462,21 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     whatsapp_paragraph = Paragraph(whatsapp_text, styles['Disclaimer'])
     elements.append(whatsapp_paragraph)
     
-    # ========================================
-    # 7. FUNCIÓN PARA MARCA DE AGUA (WATERMARK)
-    # ========================================
+    # MARCA DE AGUA
     def add_watermark(canvas, doc):
-        """Añade una marca de agua diagonal en todas las páginas"""
         canvas.saveState()
-        
-        # Configurar la marca de agua
         canvas.setFont('Helvetica-Bold', 45)
         canvas.setFillColor(colors.HexColor('#cccccc'))
         canvas.setFillAlpha(0.3)
-        
-        # Rotar 45 grados
         canvas.rotate(45)
-        
-        # Dibujar varias veces para cubrir toda la página
         canvas.drawString(150, -200, "PITAHAYA INVESTMENTS")
         canvas.drawString(150, -50, "PITAHAYA INVESTMENTS")
         canvas.drawString(150, 100, "PITAHAYA INVESTMENTS")
         canvas.drawString(150, 250, "PITAHAYA INVESTMENTS")
         canvas.drawString(150, 400, "PITAHAYA INVESTMENTS")
         canvas.drawString(150, 550, "PITAHAYA INVESTMENTS")
-        
         canvas.restoreState()
     
-    # ========================================
-    # 8. CONSTRUIR EL PDF CON WATERMARK
-    # ========================================
     doc.build(
         elements,
         onFirstPage=add_watermark,
@@ -471,14 +487,18 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     return buffer
 
 # ============================================
-# INICIAR APLICACIÓN
+# IMPORTANTE: LÍNEA NECESARIA PARA VERCEL
 # ============================================
+app = app  # ← ESTA LÍNEA ES CRÍTICA PARA VERCEL
 
-# Al final del archivo, ANTES del if __name__...
-app = app  # Necesario para Vercel
-
+# ============================================
+# INICIAR APLICACIÓN (SOLO PARA DESARROLLO LOCAL)
+# ============================================
 if __name__ == '__main__':
     print("="*50)
     print("🍈 Pitahaya Investments - Calculadora")
+    print("="*50)
+    print("✅ Modo desarrollo local")
+    print("🌐 Servidor: http://localhost:5000")
     print("="*50)
     app.run(debug=True)
