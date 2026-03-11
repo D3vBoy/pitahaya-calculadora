@@ -23,7 +23,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 
 # ============================================
-# CONFIGURACIÓN SUPABASE
+# CONFIGURACIÓN SUPABASE (VERSIÓN CORREGIDA PARA VERCEL)
 # ============================================
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
@@ -31,13 +31,53 @@ SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 logger.info(f"SUPABASE_URL: {SUPABASE_URL}")
 logger.info(f"SUPABASE_KEY: {'Configurada' if SUPABASE_KEY else 'No configurada'}")
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    logger.error("SUPABASE_URL y SUPABASE_KEY deben estar definidos")
-    supabase = None
-else:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    logger.info("✅ Supabase client initialized successfully")
+# Inicialización diferida de Supabase (para evitar errores en Vercel)
+supabase = None
 
+def get_supabase():
+    """Función para obtener el cliente de Supabase (inicialización diferida)"""
+    global supabase
+    if supabase is None and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            # Crear el cliente sin inicialización compleja
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            logger.info("✅ Supabase client initialized successfully")
+        except Exception as e:
+            logger.error(f"❌ Error inicializando Supabase: {str(e)}")
+            supabase = None
+    return supabase
+
+# ============================================
+# FUNCIONES SUPABASE
+# ============================================
+def guardar_lead(nombre, telefono, email, ip):
+    """Guarda un lead en Supabase"""
+    supabase_client = get_supabase()
+    if not supabase_client:
+        logger.error("Supabase no está configurado o no disponible")
+        return False
+    
+    try:
+        data = {
+            'nombre': nombre,
+            'telefono': telefono,
+            'email': email,
+            'ip': ip,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        response = supabase_client.table('leads').insert(data).execute()
+        
+        if hasattr(response, 'data') and response.data:
+            logger.info(f"✅ Lead guardado: {nombre} - {email}")
+            return True
+        else:
+            logger.error(f"❌ No se pudo verificar la inserción")
+            return False
+            
+    except Exception as e:
+        logger.error(f"❌ Error guardando lead: {str(e)}")
+        return False
 # ============================================
 # FACTORES DE CÁLCULO
 # ============================================
