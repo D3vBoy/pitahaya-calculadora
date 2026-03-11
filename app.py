@@ -467,14 +467,12 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
 # ============================================
 # INICIAR APLICACIÓN
 # ============================================
+
+# Al final del archivo, ANTES del if __name__...
+app = app  # Necesario para Vercel
+
 if __name__ == '__main__':
     print("="*50)
     print("🍈 Pitahaya Investments - Calculadora")
-    print("="*50)
-    print("✅ Supabase: Conectado y funcionando")
-    print("✅ PDF: Con formato completo y marca de agua")
-    print("🌐 Servidor: http://localhost:5000")
-    print("="*50)
-    print("Presiona Ctrl+C para detener")
     print("="*50)
     app.run(debug=True)
