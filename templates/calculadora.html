@@ -6,7 +6,6 @@
     <title>Pitahaya Investments - Calculadora de Ganancias</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <style>
         /* ========================================
            VARIABLES DE COLOR - PALETA PITAHAYA
@@ -121,6 +120,17 @@
 
         .range-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px var(--sombra-rosa);
+            cursor: pointer;
+            border: 3px solid var(--rosa-primario);
+        }
+
+        .range-slider::-moz-range-thumb {
             width: 25px;
             height: 25px;
             background: white;
@@ -327,10 +337,113 @@
             color: white;
         }
 
+        .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+
+        /* ========================================
+           VERSIÓN MÓVIL - TABLA CON SCROLL
+           ======================================== */
         @media (max-width: 768px) {
+            .comparison-table {
+                overflow-x: auto;
+                display: block;
+                width: 100%;
+                -webkit-overflow-scrolling: touch;
+                white-space: nowrap;
+            }
+            
             .table-row {
-                grid-template-columns: 1fr;
+                min-width: 650px;
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            .table-header {
+                min-width: 650px;
+                font-size: 14px;
+                padding: 12px 10px;
+            }
+            
+            .investment-card {
+                font-size: 14px;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .investment-amount {
+                font-size: 20px;
+            }
+            
+            .investment-title {
+                font-size: 16px;
+            }
+            
+            .slider-container {
+                padding: 15px;
+            }
+            
+            .custom-input-group {
+                flex-direction: column;
+            }
+            
+            .custom-input-group button {
+                width: 100%;
+            }
+            
+            .row {
+                --bs-gutter-y: 15px;
+            }
+            
+            .d-flex.justify-content-between.align-items-center {
+                flex-direction: column;
                 gap: 10px;
+            }
+            
+            .welcome-badge, .btn-modificar {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ========================================
+           VERSIÓN MÓVIL PEQUEÑA (menos de 480px)
+           ======================================== */
+        @media (max-width: 480px) {
+            .table-row {
+                min-width: 600px;
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+            
+            .table-header {
+                min-width: 600px;
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+            
+            .investment-amount {
+                font-size: 18px;
+            }
+            
+            .display-5 {
+                font-size: 1.8rem;
+            }
+            
+            .lead {
+                font-size: 1rem;
+            }
+            
+            .header-gradient {
+                padding: 20px;
+            }
+            
+            .p-4 {
+                padding: 1.2rem !important;
             }
         }
     </style>
@@ -439,7 +552,7 @@
                     </div>
                 </div>
 
-                <!-- Tabla Comparativa -->
+                <!-- Tabla Comparativa (con scroll en móvil) -->
                 <div class="comparison-table mb-4">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
