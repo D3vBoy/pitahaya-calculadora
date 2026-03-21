@@ -22,20 +22,27 @@
             --pitahaya-gold-dark: #D98E2C;
             --text-dark: #2D2D2D;
             --text-muted: #6c757d;
+            --text-light: #4a4a4a;
             --card-bg: white;
             --border-color: #FFB6C1;
             --warning-bg: #fff3cd;
             --warning-text: #856404;
             --warning-border: #ffc107;
+            --slider-label-color: #B32D62;
+            --table-text-color: #2D2D2D;
+            --footer-text-color: #2D2D2D;
+            --chart-label-color: #B32D62;
+            --investment-detail-color: #6c757d;
         }
 
-        /* MODO OSCURO - PALETA PITAHAYA NOCTURNA */
+        /* MODO OSCURO - TODOS LOS TEXTOS CORREGIDOS */
         body.dark-mode {
             background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
             --pitahaya-white: rgba(18, 14, 28, 0.92);
             --pitahaya-shadow: rgba(232, 62, 140, 0.35);
             --text-dark: #F8F4E8;
             --text-muted: #C4B5A0;
+            --text-light: #E8E0D5;
             --card-bg: rgba(25, 20, 40, 0.85);
             --border-color: #E83E8C;
             --warning-bg: rgba(232, 62, 140, 0.15);
@@ -43,13 +50,19 @@
             --warning-border: #E83E8C;
             --pitahaya-gold: #F5C542;
             --pitahaya-gold-dark: #E8A735;
+            --slider-label-color: #FFB6C1;
+            --table-text-color: #F8F4E8;
+            --footer-text-color: #F8F4E8;
+            --chart-label-color: #FFB6C1;
+            --investment-detail-color: #C4B5A0;
         }
 
         body.dark-mode .main-card,
         body.dark-mode .investment-card,
         body.dark-mode .comparison-table,
         body.dark-mode .slider-container,
-        body.dark-mode .chart-container {
+        body.dark-mode .chart-container,
+        body.dark-mode .footer-note {
             background: var(--card-bg);
             border-color: var(--border-color);
         }
@@ -59,12 +72,53 @@
         }
 
         body.dark-mode .table-row div {
-            color: var(--text-dark);
+            color: var(--table-text-color);
+        }
+
+        body.dark-mode .table-row.highlight {
+            background-color: rgba(232, 62, 140, 0.15);
+        }
+
+        body.dark-mode .table-row.highlight div {
+            color: var(--pitahaya-secondary);
         }
 
         body.dark-mode .warning-text {
             background: var(--warning-bg);
             color: var(--warning-text);
+        }
+
+        body.dark-mode .slider-label {
+            color: var(--slider-label-color);
+        }
+
+        body.dark-mode .text-muted,
+        body.dark-mode .form-text,
+        body.dark-mode .investment-detail,
+        body.dark-mode .chart-bar-value {
+            color: var(--text-muted) !important;
+        }
+
+        body.dark-mode .chart-title,
+        body.dark-mode .chart-bar-label,
+        body.dark-mode .investment-title {
+            color: var(--chart-label-color);
+        }
+
+        body.dark-mode .footer-note p,
+        body.dark-mode .footer-note h6,
+        body.dark-mode .footer-note strong {
+            color: var(--footer-text-color);
+        }
+
+        body.dark-mode .investment-detail {
+            color: var(--investment-detail-color);
+        }
+
+        body.dark-mode .slider-value {
+            background: linear-gradient(135deg, var(--pitahaya-secondary), var(--pitahaya-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
         }
 
         /* ESTILOS BASE */
@@ -186,7 +240,7 @@
 
         .slider-label {
             font-weight: 600;
-            color: var(--pitahaya-dark);
+            color: var(--slider-label-color);
             margin-bottom: 12px;
             font-size: 1.1rem;
         }
@@ -242,6 +296,7 @@
             font-size: 16px;
             background: white;
             transition: all 0.3s;
+            color: var(--text-dark);
         }
 
         .custom-input-group input:focus {
@@ -312,7 +367,6 @@
             min-height: 10px;
         }
 
-        /* Barra de Pitahaya con color dorado resaltado */
         .chart-bar-item[data-instrument="pitahaya"] .chart-bar {
             background: linear-gradient(180deg, var(--pitahaya-gold), var(--pitahaya-gold-dark));
             box-shadow: 0 0 20px rgba(244, 185, 66, 0.6);
@@ -467,7 +521,7 @@
         }
 
         .table-row div {
-            color: var(--text-dark);
+            color: var(--table-text-color);
         }
 
         /* BOTONES */
@@ -508,6 +562,12 @@
             border-radius: 20px;
             margin-top: 25px;
             border: 1px solid var(--pitahaya-secondary);
+        }
+
+        .footer-note p,
+        .footer-note h6,
+        .footer-note strong {
+            color: var(--footer-text-color);
         }
 
         /* ANIMACIONES */
@@ -714,6 +774,19 @@
                     </div>
                 </div>
 
+                <!-- FOOTER NOTE -->
+                <div class="footer-note">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-info-circle-fill fs-3" style="color: var(--pitahaya-primary);"></i>
+                        </div>
+                        <div>
+                            <h6 style="font-weight: 700;">¿Por qué Pitahaya?</h6>
+                            <p class="mb-0">Escritura pública a tu nombre, renta garantizada, sin topes. Invierte en un activo tangible que puedes heredar.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- BOTONES -->
                 <div class="row mt-4">
                     <div class="col-md-6">
@@ -766,7 +839,7 @@
         });
 
         // ========================================
-        // TOOLTIP PARA GRÁFICO (con cierre al salir)
+        // TOOLTIP PARA GRÁFICO
         // ========================================
         let activeTooltip = null;
         let hideTimeout = null;
@@ -857,7 +930,6 @@
             });
         }
 
-        // Cerrar tooltip al hacer scroll o tocar fuera
         window.addEventListener('scroll', () => hideTooltip());
         document.addEventListener('click', (e) => {
             if (activeTooltip && !e.target.closest('.chart-bar-item')) {
@@ -1003,7 +1075,6 @@
         });
         maxButton.addEventListener('click', () => calcularTodo(1000000));
 
-        // PDF
         document.getElementById('downloadPDF').addEventListener('click', function() {
             const capital = parseInt(slider.value);
             const btn = this;
