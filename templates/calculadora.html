@@ -7,9 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         /* ========================================
-           VARIABLES DE COLOR - BRANDING PITAHAYA
+           VARIABLES - BRANDING PITAHAYA
            ======================================== */
         :root {
             --pitahaya-primary: #E83E8C;
@@ -21,35 +23,46 @@
             --pitahaya-shadow: rgba(232, 62, 140, 0.25);
             --text-dark: #2D2D2D;
             --text-muted: #6c757d;
+            --text-light: #4a4a4a;
             --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --card-bg: white;
+            --table-bg: white;
+            --border-color: #FFB6C1;
         }
 
-        /* Modo oscuro */
+        /* MODO OSCURO CORREGIDO */
         body.dark-mode {
-            --pitahaya-white: rgba(30, 30, 40, 0.95);
+            --pitahaya-white: rgba(25, 25, 35, 0.95);
             --pitahaya-overlay: rgba(255, 255, 255, 0.05);
             --pitahaya-shadow: rgba(232, 62, 140, 0.2);
             --text-dark: #F5F5F5;
-            --text-muted: #A0A0A0;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --text-muted: #B0B0B0;
+            --text-light: #E0E0E0;
+            --card-bg: rgba(35, 35, 45, 0.9);
+            --table-bg: rgba(35, 35, 45, 0.9);
+            --border-color: #B32D62;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
         }
 
         body.dark-mode .main-card {
-            background-color: rgba(30, 30, 40, 0.92);
-            backdrop-filter: blur(12px);
+            background-color: var(--pitahaya-white);
         }
 
         body.dark-mode .investment-card,
         body.dark-mode .comparison-table,
         body.dark-mode .footer-note,
         body.dark-mode .slider-container,
-        body.dark-mode .feature-list-video {
-            background: rgba(40, 40, 50, 0.8);
-            border-color: var(--pitahaya-secondary);
+        body.dark-mode .chart-container {
+            background: var(--card-bg);
+            border-color: var(--border-color);
         }
 
-        body.dark-mode .investment-card.pitahaya {
-            background: linear-gradient(135deg, rgba(40, 40, 50, 0.9), rgba(232, 62, 140, 0.1));
+        body.dark-mode .investment-card .investment-title,
+        body.dark-mode .investment-card .investment-detail,
+        body.dark-mode .table-row div,
+        body.dark-mode .footer-note p,
+        body.dark-mode .footer-note h6 {
+            color: var(--text-light);
         }
 
         body.dark-mode .table-row.highlight {
@@ -58,9 +71,13 @@
 
         body.dark-mode .form-control,
         body.dark-mode .custom-input-group input {
-            background: rgba(50, 50, 60, 0.9);
-            border-color: var(--pitahaya-secondary);
-            color: var(--text-dark);
+            background: rgba(45, 45, 55, 0.9);
+            border-color: var(--border-color);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .text-muted {
+            color: var(--text-muted) !important;
         }
 
         /* ========================================
@@ -85,7 +102,7 @@
             z-index: 1;
         }
 
-        /* Toggle modo oscuro */
+        /* Toggle modo oscuro mejorado */
         .theme-toggle {
             position: fixed;
             bottom: 25px;
@@ -93,7 +110,7 @@
             width: 55px;
             height: 55px;
             border-radius: 50%;
-            background: var(--pitahaya-primary);
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
             border: none;
             color: white;
             font-size: 24px;
@@ -126,6 +143,29 @@
             padding: 30px;
             color: white;
             border-bottom: 3px solid var(--pitahaya-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Logo oficial */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pitahaya-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .welcome-badge {
@@ -155,7 +195,7 @@
         }
 
         /* ========================================
-           SLIDER MEJORADO
+           SLIDER MEJORADO CON ANIMACIÓN
            ======================================== */
         .slider-container {
             background: var(--pitahaya-white);
@@ -177,11 +217,11 @@
         .slider-value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--pitahaya-primary);
             background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            transition: transform 0.2s ease;
         }
 
         .range-slider {
@@ -211,43 +251,65 @@
             transform: scale(1.2);
         }
 
-        .custom-input-group {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .custom-input-group input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid var(--pitahaya-secondary);
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 500;
+        /* ========================================
+           GRÁFICO DE CRECIMIENTO
+           ======================================== */
+        .chart-container {
+            background: var(--pitahaya-white);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--pitahaya-secondary);
+            box-shadow: 0 8px 20px var(--pitahaya-shadow);
             transition: var(--transition-default);
-            background: white;
         }
 
-        .custom-input-group input:focus {
-            border-color: var(--pitahaya-primary);
-            outline: none;
-            box-shadow: 0 0 0 4px var(--pitahaya-shadow);
-        }
-
-        .custom-input-group button {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
-            color: white;
-            border: none;
-            border-radius: 40px;
+        .chart-title {
             font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-default);
+            color: var(--pitahaya-dark);
+            margin-bottom: 20px;
+            text-align: center;
         }
 
-        .custom-input-group button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--pitahaya-shadow);
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 20px;
+            padding: 20px 0;
+            min-height: 300px;
+        }
+
+        .chart-bar-item {
+            flex: 1;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .chart-bar {
+            background: linear-gradient(180deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            border-radius: 12px 12px 4px 4px;
+            transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.9;
+            transform: scaleX(1.02);
+        }
+
+        .chart-bar-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--pitahaya-dark);
+        }
+
+        .chart-bar-value {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
         }
 
         /* ========================================
@@ -261,6 +323,7 @@
             transition: var(--transition-default);
             height: 100%;
             border: 1px solid var(--pitahaya-secondary);
+            cursor: pointer;
         }
 
         .investment-card:hover {
@@ -291,6 +354,11 @@
             font-weight: 800;
             color: var(--pitahaya-primary);
             margin-bottom: 12px;
+        }
+
+        .investment-detail {
+            font-size: 14px;
+            color: var(--text-muted);
         }
 
         /* ========================================
@@ -328,6 +396,10 @@
             background-color: var(--pitahaya-light);
         }
 
+        .table-row div {
+            color: var(--text-dark);
+        }
+
         /* ========================================
            BOTONES
            ======================================== */
@@ -361,9 +433,6 @@
             transform: translateY(-2px);
         }
 
-        /* ========================================
-           FOOTER
-           ======================================== */
         .footer-note {
             background: var(--pitahaya-white);
             border-left: 4px solid var(--pitahaya-primary);
@@ -372,6 +441,90 @@
             margin-top: 25px;
             border: 1px solid var(--pitahaya-secondary);
         }
+
+        /* ========================================
+           ANIMACIONES
+           ======================================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-scale {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+
+        .animate-slide-left {
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .animate-slide-right {
+            animation: slideInRight 0.6s ease-out forwards;
+        }
+
+        /* Retrasos de animación */
+        .delay-1 { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
+
+        /* ========================================
+           ICONOS DECORATIVOS
+           ======================================== */
+        .decorative-icon {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .decorative-icon-1 { top: 20px; right: 20px; transform: rotate(15deg); }
+        .decorative-icon-2 { bottom: 20px; left: 20px; transform: rotate(-10deg); }
+        .decorative-icon-3 { top: 50%; left: 5%; transform: translateY(-50%) rotate(45deg); }
 
         /* ========================================
            RESPONSIVE
@@ -393,29 +546,37 @@
                 height: 45px;
                 font-size: 20px;
             }
-        }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+            .chart-bars {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
-        .main-card {
-            animation: fadeInUp 0.6s ease-out;
+            .chart-bar-item {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .chart-bar {
+                flex: 1;
+                height: 40px !important;
+                border-radius: 20px;
+            }
+
+            .chart-bar-label {
+                width: 80px;
+                text-align: left;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="main-card">
-            <!-- HEADER -->
-            <div class="header-gradient text-center">
+            <!-- HEADER CON LOGO OFICIAL -->
+            <div class="header-gradient text-center animate-fade-up">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div class="welcome-badge">
                         <i class="bi bi-person-circle me-2"></i>
@@ -425,14 +586,19 @@
                         <i class="bi bi-pencil-square me-1"></i> Modificar mis datos
                     </a>
                 </div>
-                <h1 class="display-5 fw-bold mb-3">🍈 Pitahaya Investments</h1>
+                <div class="logo-container">
+                    <div class="pitahaya-logo">
+                        🍈
+                    </div>
+                    <h1 class="display-5 fw-bold mb-0">Pitahaya Investments</h1>
+                </div>
                 <p class="lead mb-0">Calculadora de Ganancias • Invierte en tierra productiva</p>
             </div>
 
             <!-- CONTENIDO PRINCIPAL -->
             <div class="p-4">
-                <!-- Slider mejorado -->
-                <div class="slider-container">
+                <!-- Slider con animación -->
+                <div class="slider-container animate-slide-left delay-1">
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <div class="slider-label">
@@ -463,10 +629,21 @@
                     </div>
                 </div>
 
-                <!-- Cards de Resultados (4 columnas) -->
+                <!-- GRÁFICO DE CRECIMIENTO -->
+                <div class="chart-container animate-slide-right delay-2">
+                    <h5 class="chart-title">
+                        <i class="bi bi-bar-chart-steps me-2" style="color: var(--pitahaya-primary);"></i>
+                        Comparativa de Crecimiento a 20 Años
+                    </h5>
+                    <div class="chart-bars" id="chartBars">
+                        <!-- Las barras se generarán con JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Cards de Resultados -->
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3">
-                        <div class="investment-card pitahaya">
+                    <div class="col-md-3 animate-scale delay-1">
+                        <div class="investment-card pitahaya" data-instrument="pitahaya">
                             <div class="investment-icon"><i class="bi bi-tree-fill"></i></div>
                             <div class="investment-title">Pitahaya</div>
                             <div class="investment-amount" id="pitahayaTotal">$2,170,000</div>
@@ -474,22 +651,22 @@
                             <div class="investment-detail">Plusvalía: <span id="pitahayaPlusvalia">$450,000</span></div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="investment-card">
+                    <div class="col-md-3 animate-scale delay-2">
+                        <div class="investment-card" data-instrument="cetes">
                             <div class="investment-icon"><i class="bi bi-bank2"></i></div>
                             <div class="investment-title">Cetes (7.37%)</div>
                             <div class="investment-amount" id="cetesTotal">$1,237,000</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="investment-card">
+                    <div class="col-md-3 animate-scale delay-3">
+                        <div class="investment-card" data-instrument="bolsa">
                             <div class="investment-icon"><i class="bi bi-graph-up"></i></div>
                             <div class="investment-title">S&P 500 (10.5%)</div>
                             <div class="investment-amount" id="bolsaTotal">$1,550,000</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="investment-card sofipo">
+                    <div class="col-md-3 animate-scale delay-4">
+                        <div class="investment-card sofipo" data-instrument="sofipo">
                             <div class="investment-icon"><i class="bi bi-phone-fill"></i></div>
                             <div class="investment-title">SOFIPOS (13%)</div>
                             <div class="investment-amount" id="sofipoTotal">$1,800,000</div>
@@ -500,7 +677,7 @@
                 </div>
 
                 <!-- Tabla Comparativa -->
-                <div class="comparison-table mb-4">
+                <div class="comparison-table mb-4 animate-fade-up delay-3">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
                         Comparativa a 20 Años (interés simple)
@@ -562,12 +739,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ========================================
-        // MODO OSCURO / CLARO
+        // MODO OSCURO / CLARO (CORREGIDO)
         // ========================================
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
 
-        // Cargar preferencia guardada
         const savedTheme = localStorage.getItem('pitahaya-theme');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
@@ -591,7 +767,7 @@
         });
 
         // ========================================
-        // CÁLCULOS (tu código existente)
+        // CÁLCULOS
         // ========================================
         const slider = document.getElementById('capitalSlider');
         const capitalInput = document.getElementById('capitalInput');
@@ -627,8 +803,38 @@
         const TOPE_PROSOFIPO = 218304;
         const AÑOS = 20;
 
+        let valoresActuales = {
+            pitahaya: 0,
+            cetes: 0,
+            bolsa: 0,
+            sofipo: 0
+        };
+
         function formatMoney(amount) {
             return '$' + Math.round(amount).toLocaleString('es-MX');
+        }
+
+        function updateChart() {
+            const maxValue = Math.max(...Object.values(valoresActuales));
+            const chartBars = document.getElementById('chartBars');
+            
+            const instruments = [
+                { name: 'Pitahaya', value: valoresActuales.pitahaya, color: 'var(--pitahaya-primary)', icon: '🌳' },
+                { name: 'Cetes', value: valoresActuales.cetes, color: '#6c757d', icon: '🏦' },
+                { name: 'S&P 500', value: valoresActuales.bolsa, color: '#28a745', icon: '📈' },
+                { name: 'SOFIPOS', value: valoresActuales.sofipo, color: '#fd7e14', icon: '📱' }
+            ];
+
+            chartBars.innerHTML = instruments.map(instr => {
+                const heightPercentage = maxValue > 0 ? (instr.value / maxValue) * 100 : 0;
+                return `
+                    <div class="chart-bar-item" data-instrument="${instr.name.toLowerCase().replace(/[^a-z]/g, '')}">
+                        <div class="chart-bar" style="height: ${heightPercentage}px; background: linear-gradient(180deg, ${instr.color}, ${instr.color}cc);"></div>
+                        <div class="chart-bar-label">${instr.icon} ${instr.name}</div>
+                        <div class="chart-bar-value">${formatMoney(instr.value)}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function calcularTodo(capital) {
@@ -646,6 +852,14 @@
             const totalSofipo = capital + (capital * SOFIPO_TASA * AÑOS);
             
             const montoNoProtegido = Math.max(0, capital - TOPE_PROSOFIPO);
+
+            // Actualizar valores para el gráfico
+            valoresActuales = {
+                pitahaya: totalPitahaya,
+                cetes: totalCetes,
+                bolsa: totalBolsa,
+                sofipo: totalSofipo
+            };
 
             pitahayaTotal.textContent = formatMoney(totalPitahaya);
             pitahayaRentas.textContent = formatMoney(rentas20años);
@@ -674,9 +888,24 @@
             } else {
                 sofipoWarning.innerHTML = `✅ Dentro del límite PROSOFIPO`;
             }
+
+            updateChart();
         }
 
-        slider.addEventListener('input', (e) => calcularTodo(parseInt(e.target.value)));
+        // Eventos con animación al slider
+        slider.addEventListener('input', (e) => {
+            const capital = parseInt(e.target.value);
+            calcularTodo(capital);
+            // Animación del número
+            const valueElement = document.querySelector('.slider-value');
+            if (valueElement) {
+                valueElement.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    valueElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+        });
+
         setCapitalBtn.addEventListener('click', () => calcularTodo(parseInt(capitalInput.value)));
         capitalInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') setCapitalBtn.click();
