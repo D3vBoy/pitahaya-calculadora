@@ -7,8 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         /* ========================================
            VARIABLES - BRANDING PITAHAYA
@@ -24,28 +22,52 @@
             --text-dark: #2D2D2D;
             --text-muted: #6c757d;
             --text-light: #4a4a4a;
-            --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --card-bg: white;
             --table-bg: white;
             --border-color: #FFB6C1;
+            --warning-bg: #fff3cd;
+            --warning-text: #856404;
+            --warning-border: #ffc107;
         }
 
-        /* MODO OSCURO CORREGIDO */
+        /* ========================================
+           MODO OSCURO - PALETA PITAHAYA NOCTURNA
+           ======================================== */
         body.dark-mode {
-            --pitahaya-white: rgba(25, 25, 35, 0.95);
-            --pitahaya-overlay: rgba(255, 255, 255, 0.05);
-            --pitahaya-shadow: rgba(232, 62, 140, 0.2);
-            --text-dark: #F5F5F5;
-            --text-muted: #B0B0B0;
-            --text-light: #E0E0E0;
-            --card-bg: rgba(35, 35, 45, 0.9);
-            --table-bg: rgba(35, 35, 45, 0.9);
-            --border-color: #B32D62;
-            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            /* Fondo principal: degradado nocturno profundo */
+            background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
+            
+            /* Colores base oscuros con tono pitahaya */
+            --pitahaya-white: rgba(18, 14, 28, 0.92);
+            --pitahaya-overlay: rgba(232, 62, 140, 0.08);
+            --pitahaya-shadow: rgba(232, 62, 140, 0.35);
+            
+            /* Textos con tonos claros elegantes */
+            --text-dark: #F8F4E8;
+            --text-muted: #C4B5A0;
+            --text-light: #E8E0D5;
+            
+            /* Fondos de tarjetas con efecto vidrio oscuro */
+            --card-bg: rgba(25, 20, 40, 0.85);
+            --table-bg: rgba(25, 20, 40, 0.85);
+            --border-color: #E83E8C;
+            
+            /* Colores para advertencias en modo oscuro */
+            --warning-bg: rgba(232, 62, 140, 0.15);
+            --warning-text: #FFB6C1;
+            --warning-border: #E83E8C;
         }
 
         body.dark-mode .main-card {
             background-color: var(--pitahaya-white);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(232, 62, 140, 0.3);
+            box-shadow: 0 25px 50px rgba(232, 62, 140, 0.2);
+        }
+
+        body.dark-mode .header-gradient {
+            background: linear-gradient(135deg, #B32D62 0%, #6B1A3A 100%);
+            border-bottom: 3px solid rgba(255, 182, 193, 0.5);
         }
 
         body.dark-mode .investment-card,
@@ -55,13 +77,24 @@
         body.dark-mode .chart-container {
             background: var(--card-bg);
             border-color: var(--border-color);
+            backdrop-filter: blur(4px);
+        }
+
+        body.dark-mode .investment-card.pitahaya {
+            background: linear-gradient(135deg, rgba(25, 20, 40, 0.95), rgba(232, 62, 140, 0.15));
+            border: 2px solid var(--pitahaya-primary);
         }
 
         body.dark-mode .investment-card .investment-title,
-        body.dark-mode .investment-card .investment-detail,
-        body.dark-mode .table-row div,
-        body.dark-mode .footer-note p,
-        body.dark-mode .footer-note h6 {
+        body.dark-mode .investment-card .investment-detail {
+            color: var(--text-light);
+        }
+
+        body.dark-mode .investment-card .investment-amount {
+            color: var(--pitahaya-primary);
+        }
+
+        body.dark-mode .table-row div {
             color: var(--text-light);
         }
 
@@ -69,15 +102,55 @@
             background-color: rgba(232, 62, 140, 0.15);
         }
 
+        body.dark-mode .table-row.highlight div {
+            color: var(--pitahaya-secondary);
+        }
+
         body.dark-mode .form-control,
         body.dark-mode .custom-input-group input {
-            background: rgba(45, 45, 55, 0.9);
+            background: rgba(30, 25, 50, 0.9);
             border-color: var(--border-color);
             color: var(--text-light);
         }
 
+        body.dark-mode .form-control:focus,
+        body.dark-mode .custom-input-group input:focus {
+            border-color: var(--pitahaya-primary);
+            box-shadow: 0 0 0 3px rgba(232, 62, 140, 0.3);
+        }
+
         body.dark-mode .text-muted {
             color: var(--text-muted) !important;
+        }
+
+        body.dark-mode .warning-text {
+            background: var(--warning-bg);
+            border-left-color: var(--warning-border);
+            color: var(--warning-text);
+        }
+
+        body.dark-mode .footer-note {
+            background: rgba(232, 62, 140, 0.08);
+            border-left-color: var(--pitahaya-primary);
+        }
+
+        body.dark-mode .btn-outline-success {
+            border-color: var(--pitahaya-primary) !important;
+            color: var(--pitahaya-secondary) !important;
+        }
+
+        body.dark-mode .btn-outline-success:hover {
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark)) !important;
+            color: white !important;
+        }
+
+        /* Estilos para el gráfico en modo oscuro */
+        body.dark-mode .chart-bar-label {
+            color: var(--text-muted);
+        }
+
+        body.dark-mode .chart-bar-value {
+            color: var(--text-muted);
         }
 
         /* ========================================
@@ -116,7 +189,7 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 15px var(--pitahaya-shadow);
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -135,7 +208,7 @@
             box-shadow: 0 25px 50px var(--pitahaya-shadow);
             overflow: hidden;
             border: 1px solid var(--pitahaya-secondary);
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .header-gradient {
@@ -147,7 +220,6 @@
             overflow: hidden;
         }
 
-        /* Logo oficial */
         .logo-container {
             display: flex;
             align-items: center;
@@ -185,7 +257,7 @@
             padding: 8px 18px;
             font-size: 14px;
             text-decoration: none;
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
         }
 
@@ -195,7 +267,7 @@
         }
 
         /* ========================================
-           SLIDER MEJORADO CON ANIMACIÓN
+           SLIDER MEJORADO
            ======================================== */
         .slider-container {
             background: var(--pitahaya-white);
@@ -204,7 +276,7 @@
             margin-bottom: 25px;
             border: 1px solid var(--pitahaya-secondary);
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .slider-label {
@@ -251,6 +323,45 @@
             transform: scale(1.2);
         }
 
+        .custom-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .custom-input-group input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--pitahaya-secondary);
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .custom-input-group input:focus {
+            border-color: var(--pitahaya-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--pitahaya-shadow);
+        }
+
+        .custom-input-group button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--pitahaya-shadow);
+        }
+
         /* ========================================
            GRÁFICO DE CRECIMIENTO
            ======================================== */
@@ -261,7 +372,7 @@
             margin-bottom: 25px;
             border: 1px solid var(--pitahaya-secondary);
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chart-title {
@@ -320,7 +431,7 @@
             border-radius: 24px;
             padding: 22px;
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: var(--transition-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
             border: 1px solid var(--pitahaya-secondary);
             cursor: pointer;
@@ -359,6 +470,17 @@
         .investment-detail {
             font-size: 14px;
             color: var(--text-muted);
+        }
+
+        .warning-text {
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--warning-text);
         }
 
         /* ========================================
@@ -407,7 +529,7 @@
             border-radius: 50px !important;
             padding: 14px !important;
             font-weight: 600 !important;
-            transition: var(--transition-default) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
         .btn-success {
@@ -505,26 +627,10 @@
             animation: slideInRight 0.6s ease-out forwards;
         }
 
-        /* Retrasos de animación */
         .delay-1 { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
         .delay-2 { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
         .delay-4 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
-
-        /* ========================================
-           ICONOS DECORATIVOS
-           ======================================== */
-        .decorative-icon {
-            position: absolute;
-            font-size: 100px;
-            opacity: 0.03;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .decorative-icon-1 { top: 20px; right: 20px; transform: rotate(15deg); }
-        .decorative-icon-2 { bottom: 20px; left: 20px; transform: rotate(-10deg); }
-        .decorative-icon-3 { top: 50%; left: 5%; transform: translateY(-50%) rotate(45deg); }
 
         /* ========================================
            RESPONSIVE
@@ -636,7 +742,7 @@
                         Comparativa de Crecimiento a 20 Años
                     </h5>
                     <div class="chart-bars" id="chartBars">
-                        <!-- Las barras se generarán con JavaScript -->
+                        <!-- Las barras se generan con JavaScript -->
                     </div>
                 </div>
 
@@ -666,7 +772,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 animate-scale delay-4">
-                        <div class="investment-card sofipo" data-instrument="sofipo">
+                        <div class="investment-card" data-instrument="sofipo">
                             <div class="investment-icon"><i class="bi bi-phone-fill"></i></div>
                             <div class="investment-title">SOFIPOS (13%)</div>
                             <div class="investment-amount" id="sofipoTotal">$1,800,000</div>
@@ -676,7 +782,7 @@
                     </div>
                 </div>
 
-                <!-- Tabla Comparativa -->
+                <!-- Tabla Comparativa - CORREGIDA -->
                 <div class="comparison-table mb-4 animate-fade-up delay-3">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
@@ -739,7 +845,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ========================================
-        // MODO OSCURO / CLARO (CORREGIDO)
+        // MODO OSCURO / CLARO
         // ========================================
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
@@ -853,7 +959,6 @@
             
             const montoNoProtegido = Math.max(0, capital - TOPE_PROSOFIPO);
 
-            // Actualizar valores para el gráfico
             valoresActuales = {
                 pitahaya: totalPitahaya,
                 cetes: totalCetes,
@@ -885,18 +990,18 @@
             
             if (capital > TOPE_PROSOFIPO) {
                 sofipoWarning.innerHTML = `⚠️ ${formatMoney(capital - TOPE_PROSOFIPO)} NO protegidos`;
+                sofipoWarning.style.color = '#FFB6C1';
             } else {
                 sofipoWarning.innerHTML = `✅ Dentro del límite PROSOFIPO`;
+                sofipoWarning.style.color = '#28a745';
             }
 
             updateChart();
         }
 
-        // Eventos con animación al slider
         slider.addEventListener('input', (e) => {
             const capital = parseInt(e.target.value);
             calcularTodo(capital);
-            // Animación del número
             const valueElement = document.querySelector('.slider-value');
             if (valueElement) {
                 valueElement.style.transform = 'scale(1.05)';
