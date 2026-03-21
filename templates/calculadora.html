@@ -17,51 +17,33 @@
             --pitahaya-dark: #B32D62;
             --pitahaya-light: #FFF0F5;
             --pitahaya-white: rgba(255, 255, 255, 0.95);
-            --pitahaya-overlay: rgba(0, 0, 0, 0.04);
             --pitahaya-shadow: rgba(232, 62, 140, 0.25);
             --text-dark: #2D2D2D;
             --text-muted: #6c757d;
-            --text-light: #4a4a4a;
             --card-bg: white;
-            --table-bg: white;
             --border-color: #FFB6C1;
             --warning-bg: #fff3cd;
             --warning-text: #856404;
             --warning-border: #ffc107;
         }
 
-        /* ========================================
-           MODO OSCURO - PALETA PITAHAYA NOCTURNA
-           ======================================== */
+        /* MODO OSCURO */
         body.dark-mode {
             background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
             --pitahaya-white: rgba(18, 14, 28, 0.92);
-            --pitahaya-overlay: rgba(232, 62, 140, 0.08);
             --pitahaya-shadow: rgba(232, 62, 140, 0.35);
             --text-dark: #F8F4E8;
             --text-muted: #C4B5A0;
-            --text-light: #E8E0D5;
             --card-bg: rgba(25, 20, 40, 0.85);
-            --table-bg: rgba(25, 20, 40, 0.85);
             --border-color: #E83E8C;
             --warning-bg: rgba(232, 62, 140, 0.15);
             --warning-text: #FFB6C1;
             --warning-border: #E83E8C;
         }
 
-        body.dark-mode .main-card {
-            background-color: var(--pitahaya-white);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(232, 62, 140, 0.3);
-        }
-
-        body.dark-mode .header-gradient {
-            background: linear-gradient(135deg, #B32D62 0%, #6B1A3A 100%);
-        }
-
+        body.dark-mode .main-card,
         body.dark-mode .investment-card,
         body.dark-mode .comparison-table,
-        body.dark-mode .footer-note,
         body.dark-mode .slider-container,
         body.dark-mode .chart-container {
             background: var(--card-bg);
@@ -73,22 +55,15 @@
         }
 
         body.dark-mode .table-row div {
-            color: var(--text-light);
-        }
-
-        body.dark-mode .table-row.highlight {
-            background-color: rgba(232, 62, 140, 0.15);
+            color: var(--text-dark);
         }
 
         body.dark-mode .warning-text {
             background: var(--warning-bg);
-            border-left-color: var(--warning-border);
             color: var(--warning-text);
         }
 
-        /* ========================================
-           ESTILOS BASE
-           ======================================== */
+        /* ESTILOS BASE */
         * {
             margin: 0;
             padding: 0;
@@ -121,7 +96,7 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 15px var(--pitahaya-shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -139,7 +114,7 @@
             box-shadow: 0 25px 50px var(--pitahaya-shadow);
             overflow: hidden;
             border: 1px solid var(--pitahaya-secondary);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
         }
 
         .header-gradient {
@@ -195,9 +170,7 @@
             transform: translateY(-2px);
         }
 
-        /* ========================================
-           SLIDER MEJORADO
-           ======================================== */
+        /* SLIDER */
         .slider-container {
             background: var(--pitahaya-white);
             padding: 28px;
@@ -212,15 +185,6 @@
             color: var(--pitahaya-dark);
             margin-bottom: 12px;
             font-size: 1.1rem;
-        }
-
-        .slider-value {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
         }
 
         .range-slider {
@@ -243,11 +207,6 @@
             box-shadow: 0 0 8px var(--pitahaya-primary);
             cursor: pointer;
             border: 3px solid white;
-            transition: transform 0.2s;
-        }
-
-        .range-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
         }
 
         .custom-input-group {
@@ -262,8 +221,6 @@
             border: 2px solid var(--pitahaya-secondary);
             border-radius: 16px;
             font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s;
             background: white;
         }
 
@@ -289,9 +246,7 @@
             box-shadow: 0 5px 15px var(--pitahaya-shadow);
         }
 
-        /* ========================================
-           GRÁFICO DE CRECIMIENTO
-           ======================================== */
+        /* GRÁFICO CON POPUPS */
         .chart-container {
             background: var(--pitahaya-white);
             border-radius: 24px;
@@ -314,12 +269,18 @@
             align-items: flex-end;
             gap: 20px;
             padding: 20px 0;
-            min-height: 300px;
+            min-height: 320px;
         }
 
         .chart-bar-item {
             flex: 1;
             text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chart-bar-item:hover {
+            transform: translateY(-5px);
         }
 
         .chart-bar {
@@ -328,17 +289,19 @@
             transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 12px;
             position: relative;
-            cursor: pointer;
+            min-height: 10px;
         }
 
-        .chart-bar:hover {
-            opacity: 0.9;
-            transform: scaleX(1.02);
+        /* Barra de Pitahaya con color destacado */
+        .chart-bar-item[data-instrument="pitahaya"] .chart-bar {
+            background: linear-gradient(180deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            box-shadow: 0 0 15px rgba(232, 62, 140, 0.5);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .chart-bar-label {
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 15px;
             color: var(--pitahaya-dark);
         }
 
@@ -346,11 +309,45 @@
             font-size: 12px;
             color: var(--text-muted);
             margin-top: 5px;
+            font-weight: 500;
         }
 
-        /* ========================================
-           TARJETAS DE INVERSIÓN
-           ======================================== */
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: fixed;
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            color: white;
+            padding: 14px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 300px;
+            text-align: center;
+            z-index: 10000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+            line-height: 1.4;
+        }
+
+        .custom-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid var(--pitahaya-primary);
+        }
+
+        body.dark-mode .custom-tooltip {
+            background: linear-gradient(135deg, #B32D62, #6B1A3A);
+        }
+
+        /* TARJETAS DE INVERSIÓN */
         .investment-card {
             background: var(--pitahaya-white);
             border-radius: 24px;
@@ -359,7 +356,6 @@
             transition: all 0.3s;
             height: 100%;
             border: 1px solid var(--pitahaya-secondary);
-            cursor: pointer;
         }
 
         .investment-card:hover {
@@ -408,13 +404,11 @@
             color: var(--warning-text);
         }
 
-        /* ========================================
-           TABLA COMPARATIVA CON POPUPS
-           ======================================== */
+        /* TABLA COMPARATIVA (SIN POPUPS) */
         .comparison-table {
             background: var(--pitahaya-white);
             border-radius: 24px;
-            overflow: hidden;
+            overflow-x: auto;
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
             border: 1px solid var(--pitahaya-secondary);
         }
@@ -432,7 +426,6 @@
             padding: 14px 18px;
             border-bottom: 1px solid var(--pitahaya-secondary);
             align-items: center;
-            transition: background 0.2s;
         }
 
         .table-row:last-child {
@@ -445,63 +438,9 @@
 
         .table-row div {
             color: var(--text-dark);
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
         }
 
-        /* Estilo para celdas con popup */
-        .table-row div[data-tooltip] {
-            cursor: help;
-            border-bottom: 1px dashed var(--pitahaya-primary);
-            transition: all 0.2s;
-        }
-
-        .table-row div[data-tooltip]:hover {
-            background-color: rgba(232, 62, 140, 0.1);
-            border-radius: 8px;
-            transform: scale(1.02);
-        }
-
-        /* Tooltip personalizado */
-        .custom-tooltip {
-            position: fixed;
-            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
-            color: white;
-            padding: 12px 18px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 500;
-            max-width: 280px;
-            text-align: center;
-            z-index: 10000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            pointer-events: none;
-            transition: opacity 0.2s;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .custom-tooltip::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 20px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid var(--pitahaya-primary);
-        }
-
-        body.dark-mode .custom-tooltip {
-            background: linear-gradient(135deg, #B32D62, #6B1A3A);
-            border: 1px solid rgba(232, 62, 140, 0.5);
-        }
-
-        /* ========================================
-           BOTONES
-           ======================================== */
+        /* BOTONES */
         .btn-success, .btn-outline-success {
             border-radius: 50px !important;
             padding: 14px !important;
@@ -541,29 +480,23 @@
             border: 1px solid var(--pitahaya-secondary);
         }
 
-        /* ========================================
-           ANIMACIONES
-           ======================================== */
+        /* ANIMACIONES */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes scaleIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-40px); }
             to { opacity: 1; transform: translateX(0); }
         }
-
         @keyframes slideInRight {
             from { opacity: 0; transform: translateX(40px); }
             to { opacity: 1; transform: translateX(0); }
         }
-
         .animate-fade-up { animation: fadeInUp 0.6s ease-out forwards; }
         .animate-scale { animation: scaleIn 0.5s ease-out forwards; }
         .animate-slide-left { animation: slideInLeft 0.6s ease-out forwards; }
@@ -597,6 +530,7 @@
                 display: flex;
                 align-items: center;
                 gap: 15px;
+                cursor: pointer;
             }
             .chart-bar {
                 flex: 1;
@@ -604,13 +538,13 @@
                 border-radius: 20px;
             }
             .chart-bar-label {
-                width: 80px;
+                width: 90px;
                 text-align: left;
             }
             .custom-tooltip {
-                max-width: 220px;
-                font-size: 11px;
-                padding: 10px 14px;
+                max-width: 250px;
+                font-size: 12px;
+                padding: 12px 16px;
             }
         }
     </style>
@@ -618,7 +552,7 @@
 <body>
     <div class="container">
         <div class="main-card">
-            <!-- HEADER CON LOGO OFICIAL -->
+            <!-- HEADER -->
             <div class="header-gradient text-center animate-fade-up">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div class="welcome-badge">
@@ -630,17 +564,14 @@
                     </a>
                 </div>
                 <div class="logo-container">
-                    <div class="pitahaya-logo">
-                        🍈
-                    </div>
+                    <div class="pitahaya-logo">🍈</div>
                     <h1 class="display-5 fw-bold mb-0">Pitahaya Investments</h1>
                 </div>
                 <p class="lead mb-0">Calculadora de Ganancias • Invierte en tierra productiva</p>
             </div>
 
-            <!-- CONTENIDO PRINCIPAL -->
             <div class="p-4">
-                <!-- Slider -->
+                <!-- SLIDER -->
                 <div class="slider-container animate-slide-left delay-1">
                     <div class="row align-items-center">
                         <div class="col-md-8">
@@ -672,16 +603,16 @@
                     </div>
                 </div>
 
-                <!-- GRÁFICO DE CRECIMIENTO -->
+                <!-- GRÁFICO CON POPUPS INTERACTIVOS -->
                 <div class="chart-container animate-slide-right delay-2">
                     <h5 class="chart-title">
                         <i class="bi bi-bar-chart-steps me-2" style="color: var(--pitahaya-primary);"></i>
-                        Comparativa de Crecimiento a 20 Años
+                        Comparativa de Crecimiento a 20 Años — Toca cualquier barra para más información
                     </h5>
                     <div class="chart-bars" id="chartBars"></div>
                 </div>
 
-                <!-- Cards de Resultados -->
+                <!-- CARDS DE INVERSIÓN -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3 animate-scale delay-1">
                         <div class="investment-card pitahaya">
@@ -717,11 +648,11 @@
                     </div>
                 </div>
 
-                <!-- TABLA COMPARATIVA CON POPUPS -->
+                <!-- TABLA COMPARATIVA (SIN POPUPS) -->
                 <div class="comparison-table mb-4 animate-fade-up delay-3">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
-                        Comparativa a 20 Años (interés simple) — Pasa el mouse sobre cualquier valor para más información
+                        Comparativa a 20 Años (interés simple)
                     </div>
                     <div class="table-row">
                         <div><strong>Concepto</strong></div>
@@ -731,14 +662,14 @@
                         <div><strong>📱 SOFIPOS</strong></div>
                     </div>
                     <div class="table-row">
-                        <div><strong>Inversión Inicial</strong></div>
+                        <div>Inversión Inicial</div>
                         <div id="invInicial">$500,000</div>
                         <div id="invInicialCetes">$500,000</div>
                         <div id="invInicialBolsa">$500,000</div>
                         <div id="invInicialSofipo">$500,000</div>
                     </div>
                     <div class="table-row">
-                        <div><strong>Ganancia Total</strong></div>
+                        <div>Ganancia Total</div>
                         <div id="gananciaTotalP">$1,220,000</div>
                         <div id="gananciaTotalC">$737,000</div>
                         <div id="gananciaTotalB">$1,050,000</div>
@@ -753,7 +684,7 @@
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
+                <!-- BOTONES -->
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <button class="btn btn-success w-100 py-3" id="downloadPDF">
@@ -772,7 +703,6 @@
         </div>
     </div>
 
-    <!-- Botón modo oscuro -->
     <button class="theme-toggle" id="themeToggle">
         <i class="bi bi-moon-stars-fill"></i>
     </button>
@@ -784,14 +714,12 @@
         // ========================================
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
-
         const savedTheme = localStorage.getItem('pitahaya-theme');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
             themeIcon.classList.remove('bi-moon-stars-fill');
             themeIcon.classList.add('bi-brightness-high-fill');
         }
-
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -807,92 +735,58 @@
         });
 
         // ========================================
-        // POPUPS DE INFORMACIÓN (TABLA)
+        // TOOLTIP PARA GRÁFICO
         // ========================================
-        const tooltipData = {
-            // Pitahaya
-            'invInicial': '🌳 Tu inversión inicial en Pitahaya te da una escritura pública a tu nombre, respaldada por tierra productiva real.',
-            'gananciaTotalP': '💰 Rentas garantizadas por contrato por 20 años + plusvalía histórica del terreno. ¡Sin riesgo de mercado!',
-            'totalFinalPitahaya': '🎯 Este es tu patrimonio final: tierra + rentas acumuladas. Un activo tangible que puedes heredar.',
-            
-            // Cetes
-            'invInicialCetes': '🏦 Inversión en deuda gubernamental. Respaldo del gobierno, pero rendimiento real bajo después de impuestos e inflación.',
-            'gananciaTotalC': '📉 7.37% nominal, pero después de ISR (0.90%) e inflación (~4%), tu ganancia real es solo ~2.47%.',
-            'totalFinalCetes': '⚠️ Tu dinero en Cetes no crece realmente. Solo protege contra inflación, no genera patrimonio.',
-            
-            // S&P 500
-            'invInicialBolsa': '📊 Inversión en acciones. Rendimiento proyectado 10.5%, pero con volatilidad extrema (puedes perder 20% en un año).',
-            'gananciaTotalB': '📉 El 10.5% es un promedio histórico. En años malos puedes perder dinero. No hay garantías.',
-            'totalFinalBolsa': '⚠️ Valor sujeto a fluctuaciones diarias. Depende del mercado, no tienes un activo tangible.',
-            
-            // SOFIPOS
-            'invInicialSofipo': '📱 Inversión en fintech. Tasa atractiva del 13%, pero con limitaciones importantes.',
-            'gananciaTotalS': '⚠️ El seguro PROSOFIPO solo protege hasta $218,304. El resto NO está garantizado.',
-            'totalFinalSofipo': '🚨 Si la SOFIPO quiebra, pierdes lo que exceda el tope de protección. ¡Con Pitahaya eso no pasa!'
+        const tooltipMessages = {
+            pitahaya: {
+                title: '🌳 Pitahaya Investments',
+                message: '✅ Escritura pública a tu nombre\n✅ Renta garantizada por 20 años (12.2% anual)\n✅ Plusvalía histórica del terreno (+90%)\n✅ Activo tangible que puedes heredar\n✅ Sin topes de inversión'
+            },
+            cetes: {
+                title: '🏦 Cetes',
+                message: '⚠️ Rendimiento real bajo después de impuestos\n⚠️ La tasa nominal del 7.37% se reduce a ~4.9% real\n⚠️ No genera patrimonio, solo protege contra inflación\n⚠️ Tu dinero no crece realmente'
+            },
+            bolsa: {
+                title: '📈 S&P 500',
+                message: '⚠️ Volatilidad extrema (puedes perder 20% en un año)\n⚠️ Rendimiento no garantizado\n⚠️ Depende del mercado\n⚠️ Sin protección ante caídas'
+            },
+            sofipo: {
+                title: '📱 SOFIPOS',
+                message: '⚠️ Tope de protección PROSOFIPO: $218,304\n⚠️ El resto de tu inversión NO está garantizado\n⚠️ Si la SOFIPO quiebra, pierdes el excedente\n⚠️ Condiciones cambiantes'
+            }
         };
 
-        function showTooltip(text, x, y) {
-            // Eliminar tooltip existente
+        function showTooltip(instrument, x, y) {
             const existingTooltip = document.querySelector('.custom-tooltip');
             if (existingTooltip) existingTooltip.remove();
             
+            const data = tooltipMessages[instrument];
+            if (!data) return;
+            
             const tooltip = document.createElement('div');
             tooltip.className = 'custom-tooltip';
-            tooltip.innerHTML = text;
+            tooltip.innerHTML = `<strong>${data.title}</strong><br><br>${data.message.replace(/\n/g, '<br>')}`;
             document.body.appendChild(tooltip);
             
             const tooltipRect = tooltip.getBoundingClientRect();
             let left = x + 15;
-            let top = y - tooltipRect.height - 10;
+            let top = y - tooltipRect.height - 15;
             
-            // Ajustar si se sale de la pantalla
             if (left + tooltipRect.width > window.innerWidth) {
                 left = x - tooltipRect.width - 15;
             }
             if (top < 0) {
-                top = y + 20;
+                top = y + 25;
             }
             
             tooltip.style.left = left + 'px';
             tooltip.style.top = top + 'px';
             tooltip.style.opacity = '1';
             
-            // Auto-ocultar después de 3 segundos
             setTimeout(() => {
                 if (tooltip) tooltip.remove();
-            }, 3000);
+            }, 4000);
         }
-
-        // Agregar tooltips a las celdas de la tabla
-        const tableCells = [
-            'invInicial', 'gananciaTotalP', 'totalFinalPitahaya',
-            'invInicialCetes', 'gananciaTotalC', 'totalFinalCetes',
-            'invInicialBolsa', 'gananciaTotalB', 'totalFinalBolsa',
-            'invInicialSofipo', 'gananciaTotalS', 'totalFinalSofipo'
-        ];
-        
-        tableCells.forEach(cellId => {
-            const cell = document.getElementById(cellId);
-            if (cell && tooltipData[cellId]) {
-                cell.setAttribute('data-tooltip', tooltipData[cellId]);
-                cell.style.cursor = 'help';
-                cell.style.borderBottom = '1px dashed var(--pitahaya-primary)';
-                
-                // Eventos para mostrar tooltip
-                cell.addEventListener('mouseenter', (e) => {
-                    const text = tooltipData[cellId];
-                    const rect = cell.getBoundingClientRect();
-                    showTooltip(text, rect.left, rect.top);
-                });
-                
-                cell.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    const text = tooltipData[cellId];
-                    const rect = cell.getBoundingClientRect();
-                    showTooltip(text, rect.left, rect.top);
-                });
-            }
-        });
 
         // ========================================
         // CÁLCULOS
@@ -931,12 +825,7 @@
         const TOPE_PROSOFIPO = 218304;
         const AÑOS = 20;
 
-        let valoresActuales = {
-            pitahaya: 0,
-            cetes: 0,
-            bolsa: 0,
-            sofipo: 0
-        };
+        let valoresActuales = { pitahaya: 0, cetes: 0, bolsa: 0, sofipo: 0 };
 
         function formatMoney(amount) {
             return '$' + Math.round(amount).toLocaleString('es-MX');
@@ -947,22 +836,36 @@
             const chartBars = document.getElementById('chartBars');
             
             const instruments = [
-                { name: 'Pitahaya', value: valoresActuales.pitahaya, color: 'var(--pitahaya-primary)', icon: '🌳' },
-                { name: 'Cetes', value: valoresActuales.cetes, color: '#6c757d', icon: '🏦' },
-                { name: 'S&P 500', value: valoresActuales.bolsa, color: '#28a745', icon: '📈' },
-                { name: 'SOFIPOS', value: valoresActuales.sofipo, color: '#fd7e14', icon: '📱' }
+                { id: 'pitahaya', name: 'Pitahaya', value: valoresActuales.pitahaya, icon: '🌳', color: 'var(--pitahaya-primary)' },
+                { id: 'cetes', name: 'Cetes', value: valoresActuales.cetes, icon: '🏦', color: '#6c757d' },
+                { id: 'bolsa', name: 'S&P 500', value: valoresActuales.bolsa, icon: '📈', color: '#28a745' },
+                { id: 'sofipo', name: 'SOFIPOS', value: valoresActuales.sofipo, icon: '📱', color: '#fd7e14' }
             ];
 
             chartBars.innerHTML = instruments.map(instr => {
-                const heightPercentage = maxValue > 0 ? (instr.value / maxValue) * 100 : 0;
+                const heightPercentage = maxValue > 0 ? (instr.value / maxValue) * 250 : 0;
                 return `
-                    <div class="chart-bar-item">
-                        <div class="chart-bar" style="height: ${heightPercentage}px; background: linear-gradient(180deg, ${instr.color}, ${instr.color}cc);"></div>
+                    <div class="chart-bar-item" data-instrument="${instr.id}">
+                        <div class="chart-bar" style="height: ${Math.max(heightPercentage, 8)}px; background: linear-gradient(180deg, ${instr.color}, ${instr.color}cc);"></div>
                         <div class="chart-bar-label">${instr.icon} ${instr.name}</div>
                         <div class="chart-bar-value">${formatMoney(instr.value)}</div>
                     </div>
                 `;
             }).join('');
+
+            // Agregar eventos de tooltip a cada barra
+            document.querySelectorAll('.chart-bar-item').forEach(item => {
+                const instrument = item.getAttribute('data-instrument');
+                item.addEventListener('mouseenter', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    showTooltip(instrument, rect.left + rect.width / 2, rect.top);
+                });
+                item.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const rect = item.getBoundingClientRect();
+                    showTooltip(instrument, rect.left + rect.width / 2, rect.top);
+                });
+            });
         }
 
         function calcularTodo(capital) {
@@ -979,8 +882,6 @@
             const totalBolsa = capital + (capital * BOLSA_TASA * AÑOS);
             const totalSofipo = capital + (capital * SOFIPO_TASA * AÑOS);
             
-            const montoNoProtegido = Math.max(0, capital - TOPE_PROSOFIPO);
-
             valoresActuales = {
                 pitahaya: totalPitahaya,
                 cetes: totalCetes,
@@ -1012,27 +913,14 @@
             
             if (capital > TOPE_PROSOFIPO) {
                 sofipoWarning.innerHTML = `⚠️ ${formatMoney(capital - TOPE_PROSOFIPO)} NO protegidos`;
-                sofipoWarning.style.color = '#FFB6C1';
             } else {
                 sofipoWarning.innerHTML = `✅ Dentro del límite PROSOFIPO`;
-                sofipoWarning.style.color = '#28a745';
             }
 
             updateChart();
         }
 
-        slider.addEventListener('input', (e) => {
-            const capital = parseInt(e.target.value);
-            calcularTodo(capital);
-            const valueElement = document.querySelector('.slider-value');
-            if (valueElement) {
-                valueElement.style.transform = 'scale(1.05)';
-                setTimeout(() => {
-                    valueElement.style.transform = 'scale(1)';
-                }, 200);
-            }
-        });
-
+        slider.addEventListener('input', (e) => calcularTodo(parseInt(e.target.value)));
         setCapitalBtn.addEventListener('click', () => calcularTodo(parseInt(capitalInput.value)));
         capitalInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') setCapitalBtn.click();
