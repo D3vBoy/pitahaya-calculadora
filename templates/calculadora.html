@@ -29,7 +29,7 @@
             --warning-border: #ffc107;
         }
 
-        /* MODO OSCURO */
+        /* MODO OSCURO - PALETA PITAHAYA NOCTURNA */
         body.dark-mode {
             background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
             --pitahaya-white: rgba(18, 14, 28, 0.92);
@@ -191,6 +191,16 @@
             font-size: 1.1rem;
         }
 
+        .slider-value {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: transform 0.2s;
+        }
+
         .range-slider {
             width: 100%;
             height: 8px;
@@ -211,6 +221,11 @@
             box-shadow: 0 0 8px var(--pitahaya-primary);
             cursor: pointer;
             border: 3px solid white;
+            transition: transform 0.2s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
         }
 
         .custom-input-group {
@@ -226,6 +241,7 @@
             border-radius: 16px;
             font-size: 16px;
             background: white;
+            transition: all 0.3s;
         }
 
         .custom-input-group input:focus {
@@ -361,6 +377,7 @@
             transition: all 0.3s;
             height: 100%;
             border: 1px solid var(--pitahaya-secondary);
+            cursor: pointer;
         }
 
         .investment-card:hover {
@@ -565,7 +582,7 @@
 <body>
     <div class="container">
         <div class="main-card">
-            <!-- HEADER -->
+            <!-- HEADER CON LOGO OFICIAL -->
             <div class="header-gradient text-center animate-fade-up">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div class="welcome-badge">
@@ -716,6 +733,7 @@
         </div>
     </div>
 
+    <!-- Botón modo oscuro -->
     <button class="theme-toggle" id="themeToggle">
         <i class="bi bi-moon-stars-fill"></i>
     </button>
@@ -967,7 +985,18 @@
             updateChart();
         }
 
-        slider.addEventListener('input', (e) => calcularTodo(parseInt(e.target.value)));
+        slider.addEventListener('input', (e) => {
+            const capital = parseInt(e.target.value);
+            calcularTodo(capital);
+            const valueElement = document.querySelector('.slider-value');
+            if (valueElement) {
+                valueElement.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    valueElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+        });
+
         setCapitalBtn.addEventListener('click', () => calcularTodo(parseInt(capitalInput.value)));
         capitalInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') setCapitalBtn.click();

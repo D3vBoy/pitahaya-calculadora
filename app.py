@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify, make_response, send_from_directory
 import os
 from datetime import datetime
 from reportlab.lib import colors
@@ -7,16 +7,17 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 import io
-from supabase import create_client
-from supabase.lib.client_options import ClientOptions
+from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
 import sys
+import hashlib
+import uuid
 
 # Cargar variables de entorno
 load_dotenv()
 
-# Configurar logging para ver errores en Vercel
+# Configurar logging
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'pitahaya-secret-key-2026')
 
 # ============================================
-# CONFIGURACIÓN SUPABASE (VERSIÓN FINAL CORREGIDA)
+# CONFIGURACIÓN SUPABASE
 # ============================================
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
@@ -32,66 +33,21 @@ SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 logger.info(f"SUPABASE_URL: {SUPABASE_URL}")
 logger.info(f"SUPABASE_KEY: {'Configurada' if SUPABASE_KEY else 'No configurada'}")
 
+# Inicialización diferida de Supabase (para evitar errores en Vercel)
+supabase = None
+
 def get_supabase():
-    """Función para obtener el cliente de Supabase con configuración optimizada para Vercel"""
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        logger.error("❌ SUPABASE_URL o SUPABASE_KEY no están configurados")
-        return None
-    
-    try:
-        # Configuración específica para entornos serverless
-        options = ClientOptions(
-            auto_refresh_token=False,
-            persist_session=False,
-            headers={
-                'X-Client-Info': 'pitahaya-vercel-app'
-            }
-        )
-        
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=options)
-        logger.info("✅ Supabase client initialized successfully")
-        return supabase
-    except Exception as e:
-        logger.error(f"❌ Error inicializando Supabase: {str(e)}")
-        return None
+    """Función para obtener el cliente de Supabase (inicialización diferida)"""
+    global supabase
+    if supabase is None and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            logger.info("✅ Supabase client initialized successfully")
+        except Exception as e:
+            logger.error(f"❌ Error inicializando Supabase: {str(e)}")
+            supabase = None
+    return supabase
 
-# Inicializar el cliente (ahora con manejo de errores)
-supabase = get_supabase()
-
-# ============================================
-# FUNCIONES SUPABASE
-# ============================================
-def guardar_lead(nombre, telefono, email, ip):
-    """Guarda un lead en Supabase"""
-    if not supabase:
-        logger.error("❌ Supabase no está disponible")
-        return False
-    
-    try:
-        data = {
-            'nombre': nombre,
-            'telefono': telefono,
-            'email': email,
-            'ip': ip,
-            'created_at': datetime.now().isoformat()
-        }
-        
-        logger.info(f"Intentando guardar lead: {data}")
-        
-        response = supabase.table('leads').insert(data).execute()
-        
-        logger.info(f"Respuesta de Supabase: {response}")
-        
-        if hasattr(response, 'data') and response.data:
-            logger.info(f"✅ Lead guardado exitosamente: {nombre}")
-            return True
-        else:
-            logger.error(f"❌ Respuesta inesperada de Supabase: {response}")
-            return False
-            
-    except Exception as e:
-        logger.error(f"❌ Error guardando lead: {str(e)}")
-        return False
 # ============================================
 # FACTORES DE CÁLCULO
 # ============================================
@@ -104,7 +60,109 @@ TOPE_PROSOFIPO = 218304  # $218,304
 AÑOS = 20
 
 # ============================================
-# RUTA DE PRUEBA (para verificar que Vercel funciona)
+# FUNCIONES SUPABASE
+# ============================================
+def guardar_lead(nombre, telefono, email, ip, token=None):
+    """Guarda un lead en Supabase con token opcional"""
+    supabase_client = get_supabase()
+    if not supabase_client:
+        logger.error("Supabase no está configurado o no disponible")
+        return False
+    
+    try:
+        data = {
+            'nombre': nombre,
+            'telefono': telefono,
+            'email': email,
+            'ip': ip,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        # Agregar token si se proporciona
+        if token:
+            data['token'] = token
+        
+        response = supabase_client.table('leads').insert(data).execute()
+        
+        if hasattr(response, 'data') and response.data:
+            logger.info(f"✅ Lead guardado: {nombre} - {email}")
+            return True
+        else:
+            logger.error(f"❌ No se pudo verificar la inserción")
+            return False
+            
+    except Exception as e:
+        logger.error(f"❌ Error guardando lead: {str(e)}")
+        return False
+
+def buscar_lead_por_token(token):
+    """Busca un lead por su token"""
+    supabase_client = get_supabase()
+    if not supabase_client:
+        return None
+    
+    try:
+        response = supabase_client.table('leads').select('nombre, telefono, email, token').eq('token', token).execute()
+        if response.data and len(response.data) > 0:
+            return response.data[0]
+    except Exception as e:
+        logger.error(f"Error buscando lead por token: {str(e)}")
+    
+    return None
+
+def buscar_lead_por_ip(ip):
+    """Busca un lead por IP (para compatibilidad con registros existentes)"""
+    supabase_client = get_supabase()
+    if not supabase_client:
+        return None
+    
+    try:
+        response = supabase_client.table('leads').select('nombre, telefono, email, ip').eq('ip', ip).execute()
+        if response.data and len(response.data) > 0:
+            return response.data[0]
+    except Exception as e:
+        logger.error(f"Error buscando lead por IP: {str(e)}")
+    
+    return None
+
+# ============================================
+# FUNCIONES PARA AUTO-LOGIN
+# ============================================
+def generar_token_para_ip(ip):
+    """Genera un token único basado en la IP del usuario"""
+    secreto = app.secret_key
+    token_base = f"{ip}:{secreto}:{datetime.now().strftime('%Y%m%d')}"
+    return hashlib.sha256(token_base.encode()).hexdigest()[:32]
+
+def verificar_usuario_por_cookie():
+    """Verifica si el usuario ya está registrado mediante una cookie"""
+    token = request.cookies.get('pitahaya_user_token')
+    if not token:
+        return None
+    
+    # Buscar en Supabase si existe un usuario con este token
+    lead = buscar_lead_por_token(token)
+    if lead:
+        return lead
+    
+    return None
+
+def actualizar_token_lead(email, token):
+    """Actualiza el lead con el token generado"""
+    supabase_client = get_supabase()
+    if not supabase_client:
+        return False
+    
+    try:
+        supabase_client.table('leads').update({'token': token}).eq('email', email).execute()
+        logger.info(f"✅ Token actualizado para {email}")
+        return True
+    except Exception as e:
+        logger.error(f"❌ Error actualizando token: {str(e)}")
+        return False
+
+# ============================================
+# RUTA DE PRUEBA
 # ============================================
 @app.route('/test')
 def test():
@@ -119,56 +177,57 @@ def favicon():
         return send_from_directory(os.path.join(app.root_path, 'static'),
                                    'favicon.ico', mimetype='image/vnd.microsoft.icon')
     except:
-        return "", 204  # No content si no existe
-
-# ============================================
-# FUNCIONES SUPABASE
-# ============================================
-def guardar_lead(nombre, telefono, email, ip):
-    """Guarda un lead en Supabase"""
-    if not supabase:
-        logger.error("Supabase no está configurado")
-        return False
-    
-    try:
-        data = {
-            'nombre': nombre,
-            'telefono': telefono,
-            'email': email,
-            'ip': ip,
-            'created_at': datetime.now().isoformat()
-        }
-        
-        response = supabase.table('leads').insert(data).execute()
-        
-        if hasattr(response, 'data') and response.data:
-            logger.info(f"✅ Lead guardado: {nombre} - {email}")
-            return True
-        else:
-            logger.error(f"❌ No se pudo verificar la inserción")
-            return False
-            
-    except Exception as e:
-        logger.error(f"❌ Error guardando lead: {str(e)}")
-        return False
+        return "", 204
 
 # ============================================
 # RUTAS PRINCIPALES
 # ============================================
 @app.route('/')
 def index():
-    """Página de registro obligatorio"""
+    """Página de registro obligatorio con detección automática de usuario"""
     logger.info("🚀 Entrando a la ruta /")
-    try:
-        return render_template('registro.html')
-    except Exception as e:
-        logger.error(f"❌ Error cargando registro.html: {str(e)}")
-        return f"""
-        <h1>Error cargando la página</h1>
-        <p>{str(e)}</p>
-        <p>Verifica que el archivo 'registro.html' existe en la carpeta 'templates/'</p>
-        <p><a href="/test">Ir a página de prueba</a></p>
-        """, 500
+    
+    # Verificar si ya hay una cookie de usuario
+    usuario = verificar_usuario_por_cookie()
+    
+    if usuario:
+        # Usuario ya registrado, restaurar sesión y redirigir a calculadora
+        session['registrado'] = True
+        session['nombre_cliente'] = usuario.get('nombre')
+        session['telefono_cliente'] = usuario.get('telefono')
+        session['email_cliente'] = usuario.get('email')
+        logger.info(f"✅ Usuario reconocido por cookie: {usuario.get('nombre')}")
+        return redirect(url_for('calculadora'))
+    
+    # Verificar si ya hay un registro con esta IP (para migración)
+    ip = request.remote_addr
+    lead_existente = buscar_lead_por_ip(ip)
+    
+    if lead_existente:
+        # Usuario existente sin token, generar token y actualizar
+        token = generar_token_para_ip(ip)
+        actualizar_token_lead(lead_existente.get('email'), token)
+        
+        # Crear respuesta con cookie
+        resp = redirect(url_for('calculadora'))
+        resp.set_cookie(
+            'pitahaya_user_token', 
+            token, 
+            max_age=60*60*24*365,  # 1 año
+            httponly=True,
+            samesite='Lax'
+        )
+        
+        # Restaurar sesión
+        session['registrado'] = True
+        session['nombre_cliente'] = lead_existente.get('nombre')
+        session['telefono_cliente'] = lead_existente.get('telefono')
+        session['email_cliente'] = lead_existente.get('email')
+        
+        logger.info(f"✅ Token generado para usuario existente: {lead_existente.get('nombre')}")
+        return resp
+    
+    return render_template('registro.html')
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
@@ -194,13 +253,58 @@ def registrar():
             'email': email
         })
     
-    # Guardar en Supabase
-    if guardar_lead(nombre, telefono, email, ip):
+    # Verificar si ya existe un lead con este email
+    supabase_client = get_supabase()
+    lead_existente = None
+    if supabase_client:
+        try:
+            response = supabase_client.table('leads').select('*').eq('email', email).execute()
+            if response.data and len(response.data) > 0:
+                lead_existente = response.data[0]
+        except:
+            pass
+    
+    if lead_existente:
+        # Usuario ya existe, actualizar token y datos
+        token = generar_token_para_ip(ip)
+        actualizar_token_lead(email, token)
+        
+        session['registrado'] = True
+        session['nombre_cliente'] = lead_existente.get('nombre')
+        session['telefono_cliente'] = lead_existente.get('telefono')
+        session['email_cliente'] = lead_existente.get('email')
+        
+        resp = redirect(url_for('calculadora'))
+        resp.set_cookie(
+            'pitahaya_user_token', 
+            token, 
+            max_age=60*60*24*365,
+            httponly=True,
+            samesite='Lax'
+        )
+        return resp
+    
+    # Generar token único para este usuario
+    token = generar_token_para_ip(ip)
+    
+    # Guardar en Supabase con token
+    if guardar_lead(nombre, telefono, email, ip, token):
+        # Guardar en sesión
         session['registrado'] = True
         session['nombre_cliente'] = nombre
         session['telefono_cliente'] = telefono
         session['email_cliente'] = email
-        return redirect(url_for('calculadora'))
+        
+        # Crear respuesta con cookie
+        resp = redirect(url_for('calculadora'))
+        resp.set_cookie(
+            'pitahaya_user_token', 
+            token, 
+            max_age=60*60*24*365,  # 1 año
+            httponly=True,
+            samesite='Lax'
+        )
+        return resp
     else:
         errores.append('Error al guardar tus datos. Intenta nuevamente.')
         return render_template('registro.html', errores=errores, datos={
@@ -208,6 +312,21 @@ def registrar():
             'telefono': telefono,
             'email': email
         })
+
+@app.route('/check-auth')
+def check_auth():
+    """Verifica si el usuario ya está autenticado por cookie"""
+    usuario = verificar_usuario_por_cookie()
+    
+    if usuario:
+        # Usuario existente, actualizar sesión
+        session['registrado'] = True
+        session['nombre_cliente'] = usuario.get('nombre')
+        session['telefono_cliente'] = usuario.get('telefono')
+        session['email_cliente'] = usuario.get('email')
+        return {'authenticated': True, 'nombre': usuario.get('nombre')}
+    else:
+        return {'authenticated': False}
 
 @app.route('/calculadora')
 def calculadora():
@@ -366,7 +485,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
         name='CustomTitle',
         parent=styles['Heading1'],
         fontSize=24,
-        textColor=colors.HexColor('#ff69b4'),
+        textColor=colors.HexColor('#E83E8C'),
         spaceAfter=20,
         alignment=1,
     ))
@@ -375,7 +494,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
         name='Subtitle',
         parent=styles['Heading2'],
         fontSize=14,
-        textColor=colors.HexColor('#c71585'),
+        textColor=colors.HexColor('#B32D62'),
         spaceAfter=10,
     ))
     
@@ -410,14 +529,14 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     
     inv_table = Table(inv_data, colWidths=[3*inch, 2.5*inch])
     inv_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#ff69b4')),
+        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#E83E8C')),
         ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ffb6c1')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#FFB6C1')),
         ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
         ('FONTNAME', (1, 1), (1, -1), 'Helvetica'),
     ]))
@@ -440,14 +559,14 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     
     comp_table = Table(comp_data, colWidths=[3*inch, 2.5*inch])
     comp_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#ff69b4')),
+        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#E83E8C')),
         ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#fff0f5')),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ffb6c1')),
+        ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#FFF0F5')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#FFB6C1')),
     ]))
     
     elements.append(comp_table)
@@ -468,14 +587,14 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
     
     detalle_table = Table(detalle_data, colWidths=[3*inch, 2.5*inch])
     detalle_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#ff69b4')),
+        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#E83E8C')),
         ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 4), (1, 4), colors.HexColor('#fff0f5')),
+        ('BACKGROUND', (0, 4), (1, 4), colors.HexColor('#FFF0F5')),
         ('FONTNAME', (0, 4), (1, 4), 'Helvetica-Bold'),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ffb6c1')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#FFB6C1')),
     ]))
     
     elements.append(detalle_table)
@@ -543,7 +662,7 @@ def crear_pdf(nombre, capital, total_pitahaya, rentas, plusvalia,
 # ============================================
 # IMPORTANTE: LÍNEA NECESARIA PARA VERCEL
 # ============================================
-app = app  # ← ESTA LÍNEA ES CRÍTICA PARA VERCEL
+app = app
 
 # ============================================
 # INICIAR APLICACIÓN (SOLO PARA DESARROLLO LOCAL)
@@ -553,6 +672,7 @@ if __name__ == '__main__':
     print("🍈 Pitahaya Investments - Calculadora")
     print("="*50)
     print("✅ Modo desarrollo local")
+    print("✅ Auto-login con cookie habilitado")
     print("🌐 Servidor: http://localhost:5000")
     print("="*50)
     app.run(debug=True)
