@@ -18,6 +18,8 @@
             --pitahaya-light: #FFF0F5;
             --pitahaya-white: rgba(255, 255, 255, 0.95);
             --pitahaya-shadow: rgba(232, 62, 140, 0.25);
+            --pitahaya-gold: #F4B942;
+            --pitahaya-gold-dark: #D98E2C;
             --text-dark: #2D2D2D;
             --text-muted: #6c757d;
             --card-bg: white;
@@ -39,6 +41,8 @@
             --warning-bg: rgba(232, 62, 140, 0.15);
             --warning-text: #FFB6C1;
             --warning-border: #E83E8C;
+            --pitahaya-gold: #F5C542;
+            --pitahaya-gold-dark: #E8A735;
         }
 
         body.dark-mode .main-card,
@@ -292,11 +296,11 @@
             min-height: 10px;
         }
 
-        /* Barra de Pitahaya con color destacado */
+        /* Barra de Pitahaya con color dorado resaltado */
         .chart-bar-item[data-instrument="pitahaya"] .chart-bar {
-            background: linear-gradient(180deg, var(--pitahaya-primary), var(--pitahaya-dark));
-            box-shadow: 0 0 15px rgba(232, 62, 140, 0.5);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: linear-gradient(180deg, var(--pitahaya-gold), var(--pitahaya-gold-dark));
+            box-shadow: 0 0 20px rgba(244, 185, 66, 0.6);
+            border: 1px solid rgba(255, 215, 120, 0.5);
         }
 
         .chart-bar-label {
@@ -325,10 +329,11 @@
             text-align: center;
             z-index: 10000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            pointer-events: none;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.3);
             line-height: 1.4;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
         }
 
         .custom-tooltip::before {
@@ -364,14 +369,18 @@
         }
 
         .investment-card.pitahaya {
-            border: 2px solid var(--pitahaya-primary);
-            background: linear-gradient(135deg, var(--pitahaya-white), rgba(232, 62, 140, 0.05));
+            border: 2px solid var(--pitahaya-gold);
+            background: linear-gradient(135deg, var(--pitahaya-white), rgba(244, 185, 66, 0.08));
         }
 
         .investment-icon {
             font-size: 42px;
             margin-bottom: 18px;
             color: var(--pitahaya-primary);
+        }
+
+        .investment-card.pitahaya .investment-icon {
+            color: var(--pitahaya-gold);
         }
 
         .investment-title {
@@ -386,6 +395,10 @@
             font-weight: 800;
             color: var(--pitahaya-primary);
             margin-bottom: 12px;
+        }
+
+        .investment-card.pitahaya .investment-amount {
+            color: var(--pitahaya-gold-dark);
         }
 
         .investment-detail {
@@ -404,7 +417,7 @@
             color: var(--warning-text);
         }
 
-        /* TABLA COMPARATIVA (SIN POPUPS) */
+        /* TABLA COMPARATIVA */
         .comparison-table {
             background: var(--pitahaya-white);
             border-radius: 24px;
@@ -603,11 +616,11 @@
                     </div>
                 </div>
 
-                <!-- GRÁFICO CON POPUPS INTERACTIVOS -->
+                <!-- GRÁFICO CON POPUPS -->
                 <div class="chart-container animate-slide-right delay-2">
                     <h5 class="chart-title">
                         <i class="bi bi-bar-chart-steps me-2" style="color: var(--pitahaya-primary);"></i>
-                        Comparativa de Crecimiento a 20 Años — Toca cualquier barra para más información
+                        Comparativa de Crecimiento a 20 Años — Pasa el mouse sobre las barras
                     </h5>
                     <div class="chart-bars" id="chartBars"></div>
                 </div>
@@ -648,7 +661,7 @@
                     </div>
                 </div>
 
-                <!-- TABLA COMPARATIVA (SIN POPUPS) -->
+                <!-- TABLA COMPARATIVA -->
                 <div class="comparison-table mb-4 animate-fade-up delay-3">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
@@ -735,11 +748,14 @@
         });
 
         // ========================================
-        // TOOLTIP PARA GRÁFICO
+        // TOOLTIP PARA GRÁFICO (con cierre al salir)
         // ========================================
+        let activeTooltip = null;
+        let hideTimeout = null;
+
         const tooltipMessages = {
             pitahaya: {
-                title: '🌳 Pitahaya Investments',
+                title: '🌟 Pitahaya Investments',
                 message: '✅ Escritura pública a tu nombre\n✅ Renta garantizada por 20 años (12.2% anual)\n✅ Plusvalía histórica del terreno (+90%)\n✅ Activo tangible que puedes heredar\n✅ Sin topes de inversión'
             },
             cetes: {
@@ -756,9 +772,22 @@
             }
         };
 
+        function hideTooltip() {
+            if (hideTimeout) clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                if (activeTooltip) {
+                    activeTooltip.remove();
+                    activeTooltip = null;
+                }
+            }, 50);
+        }
+
         function showTooltip(instrument, x, y) {
-            const existingTooltip = document.querySelector('.custom-tooltip');
-            if (existingTooltip) existingTooltip.remove();
+            if (activeTooltip) {
+                activeTooltip.remove();
+                activeTooltip = null;
+            }
+            if (hideTimeout) clearTimeout(hideTimeout);
             
             const data = tooltipMessages[instrument];
             if (!data) return;
@@ -767,6 +796,7 @@
             tooltip.className = 'custom-tooltip';
             tooltip.innerHTML = `<strong>${data.title}</strong><br><br>${data.message.replace(/\n/g, '<br>')}`;
             document.body.appendChild(tooltip);
+            activeTooltip = tooltip;
             
             const tooltipRect = tooltip.getBoundingClientRect();
             let left = x + 15;
@@ -782,11 +812,40 @@
             tooltip.style.left = left + 'px';
             tooltip.style.top = top + 'px';
             tooltip.style.opacity = '1';
-            
-            setTimeout(() => {
-                if (tooltip) tooltip.remove();
-            }, 4000);
         }
+
+        function attachTooltipEvents() {
+            document.querySelectorAll('.chart-bar-item').forEach(item => {
+                const instrument = item.getAttribute('data-instrument');
+                
+                const showHandler = (e) => {
+                    const rect = item.getBoundingClientRect();
+                    showTooltip(instrument, rect.left + rect.width / 2, rect.top);
+                };
+                
+                const hideHandler = () => {
+                    hideTooltip();
+                };
+                
+                item.removeEventListener('mouseenter', showHandler);
+                item.removeEventListener('mouseleave', hideHandler);
+                item.removeEventListener('touchstart', showHandler);
+                item.removeEventListener('touchend', hideHandler);
+                
+                item.addEventListener('mouseenter', showHandler);
+                item.addEventListener('mouseleave', hideHandler);
+                item.addEventListener('touchstart', showHandler);
+                item.addEventListener('touchend', hideHandler);
+            });
+        }
+
+        // Cerrar tooltip al hacer scroll o tocar fuera
+        window.addEventListener('scroll', () => hideTooltip());
+        document.addEventListener('click', (e) => {
+            if (activeTooltip && !e.target.closest('.chart-bar-item')) {
+                hideTooltip();
+            }
+        });
 
         // ========================================
         // CÁLCULOS
@@ -836,7 +895,7 @@
             const chartBars = document.getElementById('chartBars');
             
             const instruments = [
-                { id: 'pitahaya', name: 'Pitahaya', value: valoresActuales.pitahaya, icon: '🌳', color: 'var(--pitahaya-primary)' },
+                { id: 'pitahaya', name: 'Pitahaya', value: valoresActuales.pitahaya, icon: '🌟', color: 'var(--pitahaya-gold)' },
                 { id: 'cetes', name: 'Cetes', value: valoresActuales.cetes, icon: '🏦', color: '#6c757d' },
                 { id: 'bolsa', name: 'S&P 500', value: valoresActuales.bolsa, icon: '📈', color: '#28a745' },
                 { id: 'sofipo', name: 'SOFIPOS', value: valoresActuales.sofipo, icon: '📱', color: '#fd7e14' }
@@ -853,19 +912,7 @@
                 `;
             }).join('');
 
-            // Agregar eventos de tooltip a cada barra
-            document.querySelectorAll('.chart-bar-item').forEach(item => {
-                const instrument = item.getAttribute('data-instrument');
-                item.addEventListener('mouseenter', (e) => {
-                    const rect = item.getBoundingClientRect();
-                    showTooltip(instrument, rect.left + rect.width / 2, rect.top);
-                });
-                item.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    const rect = item.getBoundingClientRect();
-                    showTooltip(instrument, rect.left + rect.width / 2, rect.top);
-                });
-            });
+            attachTooltipEvents();
         }
 
         function calcularTodo(capital) {
