@@ -367,10 +367,11 @@
             min-height: 10px;
         }
 
+        /* Barra de Pitahaya con color rosa pitahaya principal */
         .chart-bar-item[data-instrument="pitahaya"] .chart-bar {
-            background: linear-gradient(180deg, var(--pitahaya-gold), var(--pitahaya-gold-dark));
-            box-shadow: 0 0 20px rgba(244, 185, 66, 0.6);
-            border: 1px solid rgba(255, 215, 120, 0.5);
+            background: linear-gradient(180deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            box-shadow: 0 0 20px rgba(232, 62, 140, 0.5);
+            border: 1px solid rgba(232, 62, 140, 0.3);
         }
 
         .chart-bar-label {
@@ -440,8 +441,8 @@
         }
 
         .investment-card.pitahaya {
-            border: 2px solid var(--pitahaya-gold);
-            background: linear-gradient(135deg, var(--pitahaya-white), rgba(244, 185, 66, 0.08));
+            border: 2px solid var(--pitahaya-primary);
+            background: linear-gradient(135deg, var(--pitahaya-white), rgba(232, 62, 140, 0.08));
         }
 
         .investment-icon {
@@ -451,7 +452,7 @@
         }
 
         .investment-card.pitahaya .investment-icon {
-            color: var(--pitahaya-gold);
+            color: var(--pitahaya-primary);
         }
 
         .investment-title {
@@ -469,7 +470,7 @@
         }
 
         .investment-card.pitahaya .investment-amount {
-            color: var(--pitahaya-gold-dark);
+            color: var(--pitahaya-primary);
         }
 
         .investment-detail {
@@ -985,7 +986,7 @@
             const chartBars = document.getElementById('chartBars');
             
             const instruments = [
-                { id: 'pitahaya', name: 'Pitahaya', value: valoresActuales.pitahaya, icon: '🌟', color: 'var(--pitahaya-gold)' },
+                { id: 'pitahaya', name: 'Pitahaya', value: valoresActuales.pitahaya, icon: '🌟', color: 'var(--pitahaya-primary)' },
                 { id: 'cetes', name: 'Cetes', value: valoresActuales.cetes, icon: '🏦', color: '#6c757d' },
                 { id: 'bolsa', name: 'S&P 500', value: valoresActuales.bolsa, icon: '📈', color: '#28a745' },
                 { id: 'sofipo', name: 'SOFIPOS', value: valoresActuales.sofipo, icon: '📱', color: '#fd7e14' }
