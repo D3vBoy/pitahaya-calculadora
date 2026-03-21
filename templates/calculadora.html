@@ -34,25 +34,16 @@
            MODO OSCURO - PALETA PITAHAYA NOCTURNA
            ======================================== */
         body.dark-mode {
-            /* Fondo principal: degradado nocturno profundo */
             background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
-            
-            /* Colores base oscuros con tono pitahaya */
             --pitahaya-white: rgba(18, 14, 28, 0.92);
             --pitahaya-overlay: rgba(232, 62, 140, 0.08);
             --pitahaya-shadow: rgba(232, 62, 140, 0.35);
-            
-            /* Textos con tonos claros elegantes */
             --text-dark: #F8F4E8;
             --text-muted: #C4B5A0;
             --text-light: #E8E0D5;
-            
-            /* Fondos de tarjetas con efecto vidrio oscuro */
             --card-bg: rgba(25, 20, 40, 0.85);
             --table-bg: rgba(25, 20, 40, 0.85);
             --border-color: #E83E8C;
-            
-            /* Colores para advertencias en modo oscuro */
             --warning-bg: rgba(232, 62, 140, 0.15);
             --warning-text: #FFB6C1;
             --warning-border: #E83E8C;
@@ -62,12 +53,10 @@
             background-color: var(--pitahaya-white);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(232, 62, 140, 0.3);
-            box-shadow: 0 25px 50px rgba(232, 62, 140, 0.2);
         }
 
         body.dark-mode .header-gradient {
             background: linear-gradient(135deg, #B32D62 0%, #6B1A3A 100%);
-            border-bottom: 3px solid rgba(255, 182, 193, 0.5);
         }
 
         body.dark-mode .investment-card,
@@ -77,21 +66,10 @@
         body.dark-mode .chart-container {
             background: var(--card-bg);
             border-color: var(--border-color);
-            backdrop-filter: blur(4px);
         }
 
         body.dark-mode .investment-card.pitahaya {
             background: linear-gradient(135deg, rgba(25, 20, 40, 0.95), rgba(232, 62, 140, 0.15));
-            border: 2px solid var(--pitahaya-primary);
-        }
-
-        body.dark-mode .investment-card .investment-title,
-        body.dark-mode .investment-card .investment-detail {
-            color: var(--text-light);
-        }
-
-        body.dark-mode .investment-card .investment-amount {
-            color: var(--pitahaya-primary);
         }
 
         body.dark-mode .table-row div {
@@ -102,55 +80,10 @@
             background-color: rgba(232, 62, 140, 0.15);
         }
 
-        body.dark-mode .table-row.highlight div {
-            color: var(--pitahaya-secondary);
-        }
-
-        body.dark-mode .form-control,
-        body.dark-mode .custom-input-group input {
-            background: rgba(30, 25, 50, 0.9);
-            border-color: var(--border-color);
-            color: var(--text-light);
-        }
-
-        body.dark-mode .form-control:focus,
-        body.dark-mode .custom-input-group input:focus {
-            border-color: var(--pitahaya-primary);
-            box-shadow: 0 0 0 3px rgba(232, 62, 140, 0.3);
-        }
-
-        body.dark-mode .text-muted {
-            color: var(--text-muted) !important;
-        }
-
         body.dark-mode .warning-text {
             background: var(--warning-bg);
             border-left-color: var(--warning-border);
             color: var(--warning-text);
-        }
-
-        body.dark-mode .footer-note {
-            background: rgba(232, 62, 140, 0.08);
-            border-left-color: var(--pitahaya-primary);
-        }
-
-        body.dark-mode .btn-outline-success {
-            border-color: var(--pitahaya-primary) !important;
-            color: var(--pitahaya-secondary) !important;
-        }
-
-        body.dark-mode .btn-outline-success:hover {
-            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark)) !important;
-            color: white !important;
-        }
-
-        /* Estilos para el gráfico en modo oscuro */
-        body.dark-mode .chart-bar-label {
-            color: var(--text-muted);
-        }
-
-        body.dark-mode .chart-bar-value {
-            color: var(--text-muted);
         }
 
         /* ========================================
@@ -175,7 +108,6 @@
             z-index: 1;
         }
 
-        /* Toggle modo oscuro mejorado */
         .theme-toggle {
             position: fixed;
             bottom: 25px;
@@ -198,7 +130,6 @@
 
         .theme-toggle:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px var(--pitahaya-shadow);
         }
 
         .main-card {
@@ -216,8 +147,6 @@
             padding: 30px;
             color: white;
             border-bottom: 3px solid var(--pitahaya-secondary);
-            position: relative;
-            overflow: hidden;
         }
 
         .logo-container {
@@ -257,7 +186,7 @@
             padding: 8px 18px;
             font-size: 14px;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             font-weight: 500;
         }
 
@@ -276,7 +205,6 @@
             margin-bottom: 25px;
             border: 1px solid var(--pitahaya-secondary);
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .slider-label {
@@ -293,7 +221,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            transition: transform 0.2s ease;
         }
 
         .range-slider {
@@ -336,7 +263,7 @@
             border-radius: 16px;
             font-size: 16px;
             font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             background: white;
         }
 
@@ -354,7 +281,7 @@
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
         }
 
         .custom-input-group button:hover {
@@ -372,7 +299,6 @@
             margin-bottom: 25px;
             border: 1px solid var(--pitahaya-secondary);
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chart-title {
@@ -394,7 +320,6 @@
         .chart-bar-item {
             flex: 1;
             text-align: center;
-            transition: all 0.3s ease;
         }
 
         .chart-bar {
@@ -431,7 +356,7 @@
             border-radius: 24px;
             padding: 22px;
             box-shadow: 0 8px 20px var(--pitahaya-shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             height: 100%;
             border: 1px solid var(--pitahaya-secondary);
             cursor: pointer;
@@ -484,7 +409,7 @@
         }
 
         /* ========================================
-           TABLA COMPARATIVA
+           TABLA COMPARATIVA CON POPUPS
            ======================================== */
         .comparison-table {
             background: var(--pitahaya-white);
@@ -520,6 +445,58 @@
 
         .table-row div {
             color: var(--text-dark);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Estilo para celdas con popup */
+        .table-row div[data-tooltip] {
+            cursor: help;
+            border-bottom: 1px dashed var(--pitahaya-primary);
+            transition: all 0.2s;
+        }
+
+        .table-row div[data-tooltip]:hover {
+            background-color: rgba(232, 62, 140, 0.1);
+            border-radius: 8px;
+            transform: scale(1.02);
+        }
+
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: fixed;
+            background: linear-gradient(135deg, var(--pitahaya-primary), var(--pitahaya-dark));
+            color: white;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            max-width: 280px;
+            text-align: center;
+            z-index: 10000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            pointer-events: none;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .custom-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid var(--pitahaya-primary);
+        }
+
+        body.dark-mode .custom-tooltip {
+            background: linear-gradient(135deg, #B32D62, #6B1A3A);
+            border: 1px solid rgba(232, 62, 140, 0.5);
         }
 
         /* ========================================
@@ -529,7 +506,7 @@
             border-radius: 50px !important;
             padding: 14px !important;
             font-weight: 600 !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.3s !important;
         }
 
         .btn-success {
@@ -568,83 +545,42 @@
            ANIMACIONES
            ======================================== */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .animate-fade-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .animate-scale {
-            animation: scaleIn 0.5s ease-out forwards;
-        }
-
-        .animate-slide-left {
-            animation: slideInLeft 0.6s ease-out forwards;
-        }
-
-        .animate-slide-right {
-            animation: slideInRight 0.6s ease-out forwards;
-        }
-
+        .animate-fade-up { animation: fadeInUp 0.6s ease-out forwards; }
+        .animate-scale { animation: scaleIn 0.5s ease-out forwards; }
+        .animate-slide-left { animation: slideInLeft 0.6s ease-out forwards; }
+        .animate-slide-right { animation: slideInRight 0.6s ease-out forwards; }
         .delay-1 { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
         .delay-2 { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
         .delay-4 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
 
-        /* ========================================
-           RESPONSIVE
-           ======================================== */
         @media (max-width: 768px) {
             .comparison-table {
                 overflow-x: auto;
                 display: block;
             }
-            
             .table-row {
                 min-width: 650px;
             }
-            
             .theme-toggle {
                 bottom: 20px;
                 right: 20px;
@@ -652,28 +588,29 @@
                 height: 45px;
                 font-size: 20px;
             }
-
             .chart-bars {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 15px;
             }
-
             .chart-bar-item {
                 display: flex;
                 align-items: center;
                 gap: 15px;
             }
-
             .chart-bar {
                 flex: 1;
                 height: 40px !important;
                 border-radius: 20px;
             }
-
             .chart-bar-label {
                 width: 80px;
                 text-align: left;
+            }
+            .custom-tooltip {
+                max-width: 220px;
+                font-size: 11px;
+                padding: 10px 14px;
             }
         }
     </style>
@@ -703,7 +640,7 @@
 
             <!-- CONTENIDO PRINCIPAL -->
             <div class="p-4">
-                <!-- Slider con animación -->
+                <!-- Slider -->
                 <div class="slider-container animate-slide-left delay-1">
                     <div class="row align-items-center">
                         <div class="col-md-8">
@@ -741,15 +678,13 @@
                         <i class="bi bi-bar-chart-steps me-2" style="color: var(--pitahaya-primary);"></i>
                         Comparativa de Crecimiento a 20 Años
                     </h5>
-                    <div class="chart-bars" id="chartBars">
-                        <!-- Las barras se generan con JavaScript -->
-                    </div>
+                    <div class="chart-bars" id="chartBars"></div>
                 </div>
 
                 <!-- Cards de Resultados -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3 animate-scale delay-1">
-                        <div class="investment-card pitahaya" data-instrument="pitahaya">
+                        <div class="investment-card pitahaya">
                             <div class="investment-icon"><i class="bi bi-tree-fill"></i></div>
                             <div class="investment-title">Pitahaya</div>
                             <div class="investment-amount" id="pitahayaTotal">$2,170,000</div>
@@ -758,21 +693,21 @@
                         </div>
                     </div>
                     <div class="col-md-3 animate-scale delay-2">
-                        <div class="investment-card" data-instrument="cetes">
+                        <div class="investment-card">
                             <div class="investment-icon"><i class="bi bi-bank2"></i></div>
                             <div class="investment-title">Cetes (7.37%)</div>
                             <div class="investment-amount" id="cetesTotal">$1,237,000</div>
                         </div>
                     </div>
                     <div class="col-md-3 animate-scale delay-3">
-                        <div class="investment-card" data-instrument="bolsa">
+                        <div class="investment-card">
                             <div class="investment-icon"><i class="bi bi-graph-up"></i></div>
                             <div class="investment-title">S&P 500 (10.5%)</div>
                             <div class="investment-amount" id="bolsaTotal">$1,550,000</div>
                         </div>
                     </div>
                     <div class="col-md-3 animate-scale delay-4">
-                        <div class="investment-card" data-instrument="sofipo">
+                        <div class="investment-card">
                             <div class="investment-icon"><i class="bi bi-phone-fill"></i></div>
                             <div class="investment-title">SOFIPOS (13%)</div>
                             <div class="investment-amount" id="sofipoTotal">$1,800,000</div>
@@ -782,28 +717,28 @@
                     </div>
                 </div>
 
-                <!-- Tabla Comparativa - CORREGIDA -->
+                <!-- TABLA COMPARATIVA CON POPUPS -->
                 <div class="comparison-table mb-4 animate-fade-up delay-3">
                     <div class="table-header">
                         <i class="bi bi-table me-2"></i>
-                        Comparativa a 20 Años (interés simple)
+                        Comparativa a 20 Años (interés simple) — Pasa el mouse sobre cualquier valor para más información
                     </div>
                     <div class="table-row">
                         <div><strong>Concepto</strong></div>
-                        <div><strong>Pitahaya</strong></div>
-                        <div><strong>Cetes</strong></div>
-                        <div><strong>S&P 500</strong></div>
-                        <div><strong>SOFIPOS</strong></div>
+                        <div><strong>🏡 Pitahaya</strong></div>
+                        <div><strong>🏦 Cetes</strong></div>
+                        <div><strong>📈 S&P 500</strong></div>
+                        <div><strong>📱 SOFIPOS</strong></div>
                     </div>
                     <div class="table-row">
-                        <div>Inversión Inicial</div>
+                        <div><strong>Inversión Inicial</strong></div>
                         <div id="invInicial">$500,000</div>
                         <div id="invInicialCetes">$500,000</div>
                         <div id="invInicialBolsa">$500,000</div>
                         <div id="invInicialSofipo">$500,000</div>
                     </div>
                     <div class="table-row">
-                        <div>Ganancia Total</div>
+                        <div><strong>Ganancia Total</strong></div>
                         <div id="gananciaTotalP">$1,220,000</div>
                         <div id="gananciaTotalC">$737,000</div>
                         <div id="gananciaTotalB">$1,050,000</div>
@@ -845,7 +780,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ========================================
-        // MODO OSCURO / CLARO
+        // MODO OSCURO
         // ========================================
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
@@ -860,7 +795,6 @@
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            
             if (isDark) {
                 themeIcon.classList.remove('bi-moon-stars-fill');
                 themeIcon.classList.add('bi-brightness-high-fill');
@@ -869,6 +803,94 @@
                 themeIcon.classList.remove('bi-brightness-high-fill');
                 themeIcon.classList.add('bi-moon-stars-fill');
                 localStorage.setItem('pitahaya-theme', 'light');
+            }
+        });
+
+        // ========================================
+        // POPUPS DE INFORMACIÓN (TABLA)
+        // ========================================
+        const tooltipData = {
+            // Pitahaya
+            'invInicial': '🌳 Tu inversión inicial en Pitahaya te da una escritura pública a tu nombre, respaldada por tierra productiva real.',
+            'gananciaTotalP': '💰 Rentas garantizadas por contrato por 20 años + plusvalía histórica del terreno. ¡Sin riesgo de mercado!',
+            'totalFinalPitahaya': '🎯 Este es tu patrimonio final: tierra + rentas acumuladas. Un activo tangible que puedes heredar.',
+            
+            // Cetes
+            'invInicialCetes': '🏦 Inversión en deuda gubernamental. Respaldo del gobierno, pero rendimiento real bajo después de impuestos e inflación.',
+            'gananciaTotalC': '📉 7.37% nominal, pero después de ISR (0.90%) e inflación (~4%), tu ganancia real es solo ~2.47%.',
+            'totalFinalCetes': '⚠️ Tu dinero en Cetes no crece realmente. Solo protege contra inflación, no genera patrimonio.',
+            
+            // S&P 500
+            'invInicialBolsa': '📊 Inversión en acciones. Rendimiento proyectado 10.5%, pero con volatilidad extrema (puedes perder 20% en un año).',
+            'gananciaTotalB': '📉 El 10.5% es un promedio histórico. En años malos puedes perder dinero. No hay garantías.',
+            'totalFinalBolsa': '⚠️ Valor sujeto a fluctuaciones diarias. Depende del mercado, no tienes un activo tangible.',
+            
+            // SOFIPOS
+            'invInicialSofipo': '📱 Inversión en fintech. Tasa atractiva del 13%, pero con limitaciones importantes.',
+            'gananciaTotalS': '⚠️ El seguro PROSOFIPO solo protege hasta $218,304. El resto NO está garantizado.',
+            'totalFinalSofipo': '🚨 Si la SOFIPO quiebra, pierdes lo que exceda el tope de protección. ¡Con Pitahaya eso no pasa!'
+        };
+
+        function showTooltip(text, x, y) {
+            // Eliminar tooltip existente
+            const existingTooltip = document.querySelector('.custom-tooltip');
+            if (existingTooltip) existingTooltip.remove();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            tooltip.innerHTML = text;
+            document.body.appendChild(tooltip);
+            
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left = x + 15;
+            let top = y - tooltipRect.height - 10;
+            
+            // Ajustar si se sale de la pantalla
+            if (left + tooltipRect.width > window.innerWidth) {
+                left = x - tooltipRect.width - 15;
+            }
+            if (top < 0) {
+                top = y + 20;
+            }
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.opacity = '1';
+            
+            // Auto-ocultar después de 3 segundos
+            setTimeout(() => {
+                if (tooltip) tooltip.remove();
+            }, 3000);
+        }
+
+        // Agregar tooltips a las celdas de la tabla
+        const tableCells = [
+            'invInicial', 'gananciaTotalP', 'totalFinalPitahaya',
+            'invInicialCetes', 'gananciaTotalC', 'totalFinalCetes',
+            'invInicialBolsa', 'gananciaTotalB', 'totalFinalBolsa',
+            'invInicialSofipo', 'gananciaTotalS', 'totalFinalSofipo'
+        ];
+        
+        tableCells.forEach(cellId => {
+            const cell = document.getElementById(cellId);
+            if (cell && tooltipData[cellId]) {
+                cell.setAttribute('data-tooltip', tooltipData[cellId]);
+                cell.style.cursor = 'help';
+                cell.style.borderBottom = '1px dashed var(--pitahaya-primary)';
+                
+                // Eventos para mostrar tooltip
+                cell.addEventListener('mouseenter', (e) => {
+                    const text = tooltipData[cellId];
+                    const rect = cell.getBoundingClientRect();
+                    showTooltip(text, rect.left, rect.top);
+                });
+                
+                cell.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const text = tooltipData[cellId];
+                    const rect = cell.getBoundingClientRect();
+                    showTooltip(text, rect.left, rect.top);
+                });
             }
         });
 
@@ -934,7 +956,7 @@
             chartBars.innerHTML = instruments.map(instr => {
                 const heightPercentage = maxValue > 0 ? (instr.value / maxValue) * 100 : 0;
                 return `
-                    <div class="chart-bar-item" data-instrument="${instr.name.toLowerCase().replace(/[^a-z]/g, '')}">
+                    <div class="chart-bar-item">
                         <div class="chart-bar" style="height: ${heightPercentage}px; background: linear-gradient(180deg, ${instr.color}, ${instr.color}cc);"></div>
                         <div class="chart-bar-label">${instr.icon} ${instr.name}</div>
                         <div class="chart-bar-value">${formatMoney(instr.value)}</div>
