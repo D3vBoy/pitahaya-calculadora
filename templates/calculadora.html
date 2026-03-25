@@ -31,7 +31,7 @@
             --investment-detail-color: #6c757d;
         }
 
-        /* MODO OSCURO */
+        /* MODO OSCURO - TODOS LOS TEXTOS CORREGIDOS */
         body.dark-mode {
             background: linear-gradient(135deg, #0f0c1a 0%, #1a142f 50%, #0f0c1a 100%);
             --pitahaya-white: rgba(18, 14, 28, 0.92);
@@ -99,6 +99,17 @@
             background: linear-gradient(135deg, var(--pitahaya-secondary), var(--pitahaya-primary));
             -webkit-background-clip: text;
             background-clip: text;
+        }
+
+        /* CORRECCIÓN: Input manual en modo oscuro */
+        body.dark-mode .custom-input-group input {
+            background: rgba(30, 25, 50, 0.9);
+            border-color: var(--border-color);
+            color: var(--text-dark) !important;
+        }
+
+        body.dark-mode .custom-input-group input::placeholder {
+            color: var(--text-muted);
         }
 
         /* ESTILOS BASE */
@@ -581,7 +592,7 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN DE VIDEO (NUEVA) -->
+                <!-- SECCIÓN DE VIDEO -->
                 <div class="video-section animate-slide-right delay-2">
                     <div class="text-center mb-4">
                         <div class="video-badge">
